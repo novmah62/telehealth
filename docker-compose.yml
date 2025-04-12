@@ -1,0 +1,96 @@
+services:
+
+  postgres:
+    container_name: postgres
+    image: postgres:latest
+    platform: linux/amd64
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: manhnv
+      POSTGRES_PASSWORD: 06022003
+    ports:
+      - 5432:5432
+    networks:
+      - api-network
+
+  mysql:
+    container_name: mysql
+    image: mysql:8
+    platform: linux/amd64
+    volumes:
+      - mysql-data:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: keycloak
+      MYSQL_USER: keycloak
+      MYSQL_PASSWORD: keycloak
+    ports:
+      - "3306:3306"
+    networks:
+      - api-network
+
+  keycloak:
+    container_name: keycloak
+    image: quay.io/keycloak/keycloak:23.0.3
+#    command: [ "start-dev", "--import-realm" ]
+    command: ["start-dev"]
+    depends_on:
+      - mysql
+    environment:
+      DB_VENDOR: MYSQL
+      DB_ADDR: mysql
+      DB_DATABASE: keycloak
+      DB_USER: keycloak
+      DB_PASSWORD: keycloak
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./keycloak-realms/:/opt/keycloak/data/import/
+    networks:
+      - api-network
+
+#  redis:
+#    image: redis:latest
+#    container_name: redis
+#    restart: always
+#    command: ["redis-server", "--appendonly", "yes"]
+#    ports:
+#      - "6379:6379"
+#    volumes:
+#      - redis-data:/data
+#    networks:
+#      - api-network
+
+  rabbitmq:
+    image: rabbitmq
+    container_name: rabbitmq
+    ports:
+      - 5672:5672
+      - 15672:15672
+    environment:
+      AMQP_URL: amqp://rabbitmq?connection_attempts=5&retry_delay=5
+      RABBITMQ_DEFAULT_USER: manhnv
+      RABBITMQ_DEFAULT_PASS: 06022003
+    networks:
+      - api-network
+
+  ### ZIPKIN ###
+  zipkin:
+    image: openzipkin/zipkin
+    container_name: zipkin
+    ports:
+      - 9411:9411
+    networks:
+      - api-network
+
+networks:
+  api-network:
+    driver: bridge
+
+volumes:
+#  redis-data:
+  mysql-data:
+  postgres-data:
