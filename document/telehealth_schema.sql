@@ -114,17 +114,17 @@ CREATE TABLE notifications (
     sent_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- ====================
--- BILLING CONTEXT
--- ====================
-CREATE TABLE payments (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    user_id UUID NOT NULL REFERENCES users(id),
-    amount NUMERIC(10, 2),
-    method VARCHAR(50),
-    status VARCHAR(50),
-    paid_at TIMESTAMPTZ
-);
+-- -- ====================
+-- -- BILLING CONTEXT
+-- -- ====================
+-- CREATE TABLE payments (
+--     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+--     user_id UUID NOT NULL REFERENCES users(id),
+--     amount NUMERIC(10, 2),
+--     method VARCHAR(50),
+--     status VARCHAR(50),
+--     paid_at TIMESTAMPTZ
+-- );
 
 -- ====================
 -- AUDIT CONTEXT
