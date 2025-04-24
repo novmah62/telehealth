@@ -31,8 +31,15 @@
 	<modules>
 		<module>discovery-server</module>
 		<module>config-server</module>
+		<module>api-gateway</module>
 		<module>user-service</module>
-<!--		<module>common-service</module>-->
+		<module>consultation-service</module>
+		<module>appointment-service</module>
+		<module>prescription-service</module>
+		<module>verification-service</module>
+		<module>notification-service</module>
+		<module>audit-service</module>
+		<module>commons</module>
 	</modules>
 
 	<properties>
