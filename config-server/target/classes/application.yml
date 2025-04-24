@@ -1,0 +1,33 @@
+server:
+  port: 8888
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka
+#      defaultZone: http://eureka:password@localhost:8761/eureka
+
+spring:
+  application:
+    name: config-server
+  profiles:
+    active: "native"
+
+#  cloud:
+#    config:
+#      server:
+#        git:
+#          uri: https://github.com/novmah62/config-server-repo
+#          clone-on-start: true
+#          default-label: main
+#  rabbitmq:
+#    host: localhost
+#    port: 5672
+#    username: manhnv
+#    password: 06022003
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
