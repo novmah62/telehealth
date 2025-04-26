@@ -6,11 +6,26 @@ services:
     platform: linux/amd64
     volumes:
       - postgres-data:/var/lib/postgresql/data
+      - ./document/db/init-postgres.sql:/docker-entrypoint-initdb.d/init-postgres.sql
     environment:
       POSTGRES_USER: manhnv
       POSTGRES_PASSWORD: 06022003
     ports:
       - 5432:5432
+    networks:
+      - api-network
+
+  mongodb:
+    container_name: mongodb
+    image: mongo
+    volumes:
+      - mongodb-data:/data
+      - ./document/db/init-mongo.js:/docker-entrypoint-initdb.d/init-mongo.js
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: manhnv
+      MONGO_INITDB_ROOT_PASSWORD: 06022003
+    ports:
+      - 27017:27017
     networks:
       - api-network
 
@@ -48,7 +63,7 @@ services:
     ports:
       - 9090:8080
     volumes:
-      - ./keycloak-realms/:/opt/keycloak/data/import/
+      - ./document/keycloak/:/opt/keycloak/data/import/
     networks:
       - api-network
 
@@ -94,3 +109,4 @@ volumes:
 #  redis-data:
   mysql-data:
   postgres-data:
+  mongodb-data:
