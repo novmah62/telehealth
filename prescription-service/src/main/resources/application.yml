@@ -1,5 +1,5 @@
 spring:
   application:
-    name: user-service
+    name: prescription-service
   config:
     import: "configserver:http://localhost:8888"
