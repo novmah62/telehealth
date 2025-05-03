@@ -10,9 +10,11 @@ import java.util.List;
 
 public interface MessageService {
 
-    void sendMessage(MessageRequest request);
+//    void sendMessage(MessageRequest request);
+    void sendMessage(String senderId, MessageRequest request);
     void markMessageAsRead(String messageId);
-    void uploadMediaMessage(String consultationId, MultipartFile file);
+//    void uploadMediaMessage(String consultationId, MultipartFile file);
+    void uploadMediaMessage(String senderId, String consultationId, MultipartFile file);
     List<MessageResponse> getMessagesByConsultation(String consultationId);
     Page<MessageResponse> getMessagesByConsultation(String consultationId, Pageable pageable);
 

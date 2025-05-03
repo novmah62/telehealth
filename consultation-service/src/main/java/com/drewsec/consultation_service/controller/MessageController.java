@@ -22,8 +22,10 @@ public class MessageController {
     private final MessageService messageService;
 
     @PostMapping
-    public ApiResponse<Void> sendMessage(@RequestBody MessageRequest request) {
-        messageService.sendMessage(request);
+    public ApiResponse<Void> sendMessage(@RequestBody MessageRequest request,
+        @RequestParam String senderId) {
+        messageService.sendMessage(senderId, request);
+//        messageService.sendMessage(request);
         return new ApiResponse<>(STATUS_OK, MESSAGE_SENT);
     }
 
@@ -36,8 +38,11 @@ public class MessageController {
     @PostMapping("/upload/{consultationId}")
     public ApiResponse<Void> uploadMedia(
             @PathVariable String consultationId,
-            @RequestParam("file") MultipartFile file) {
-        messageService.uploadMediaMessage(consultationId, file);
+            @RequestParam("file") MultipartFile file,
+            @RequestParam String senderId) {
+//        messageService.uploadMediaMessage(consultationId, file);
+        messageService.uploadMediaMessage(senderId, consultationId, file);
+
         return new ApiResponse<>(STATUS_OK, MEDIA_UPLOADED);
     }
 

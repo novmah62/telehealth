@@ -24,6 +24,7 @@ services:
     environment:
       MONGO_INITDB_ROOT_USERNAME: manhnv
       MONGO_INITDB_ROOT_PASSWORD: 06022003
+      MONGO_INITDB_DATABASE: admin
     ports:
       - 27017:27017
     networks:

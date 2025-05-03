@@ -1,7 +1,6 @@
 package com.drewsec.consultation_service.service.impl;
 
 import com.drewsec.commons.exception.ResourceNotFoundException;
-import com.drewsec.commons.security.util.AuthenticatedUserUtil;
 import com.drewsec.consultation_service.dto.request.MessageRequest;
 import com.drewsec.consultation_service.dto.response.MessageResponse;
 import com.drewsec.consultation_service.dto.response.NotificationResponse;
@@ -38,9 +37,35 @@ public class MessageServiceImpl implements MessageService {
     private final FileService fileService;
     private final NotificationService notificationService;
 
+//    @Override
+//    public void sendMessage(MessageRequest request) {
+//        String senderId = AuthenticatedUserUtil.getCurrentUserId();
+//        Message message = new Message();
+//        message.setConsultationId(request.getConsultationId());
+//        message.setContent(request.getContent());
+//        message.setSenderId(senderId);
+//        message.setReceiverId(request.getReceiverId());
+//        message.setState(MessageState.SENT);
+//        message.setType(request.getType());
+//        message.setCreatedDate(LocalDateTime.now());
+//
+//        messageRepository.save(message);
+//
+//        notificationService.sendNotification(
+//                request.getReceiverId(),
+//                NotificationResponse.builder()
+//                        .chatId(request.getConsultationId())
+//                        .content(request.getContent())
+//                        .senderId(senderId)
+//                        .receiverId(request.getReceiverId())
+//                        .messageType(request.getType())
+//                        .type(NotificationType.MESSAGE)
+//                        .build()
+//        );
+//    }
+
     @Override
-    public void sendMessage(MessageRequest request) {
-        String senderId = AuthenticatedUserUtil.getCurrentUserId();
+    public void sendMessage(String senderId, MessageRequest request) {
         Message message = new Message();
         message.setConsultationId(request.getConsultationId());
         message.setContent(request.getContent());
@@ -73,9 +98,44 @@ public class MessageServiceImpl implements MessageService {
         });
     }
 
+//    @Override
+//    public void uploadMediaMessage(String consultationId, MultipartFile file) {
+//        String senderId = AuthenticatedUserUtil.getCurrentUserId();
+//        Consultation consultation = consultationRepository.findById(consultationId)
+//                .orElseThrow(() -> new ResourceNotFoundException("Consultation", "consultation ID", consultationId));
+//
+//        String receiverId = consultation.getConsultantId().equals(senderId)
+//                ? consultation.getPatientId()
+//                : consultation.getConsultantId();
+//
+//        String filePath = fileService.saveFile(file, senderId);
+//
+//        Message message = new Message();
+//        message.setConsultationId(consultationId);
+//        message.setMediaFilePath(filePath);
+//        message.setSenderId(senderId);
+//        message.setReceiverId(receiverId);
+//        message.setState(MessageState.SENT);
+//        message.setType(MessageType.IMAGE);
+//        message.setCreatedDate(LocalDateTime.now());
+//
+//        messageRepository.save(message);
+//
+//        notificationService.sendNotification(
+//                receiverId,
+//                NotificationResponse.builder()
+//                        .chatId(consultationId)
+//                        .media(FileUtil.readFileFromLocation(filePath))
+//                        .senderId(senderId)
+//                        .receiverId(receiverId)
+//                        .messageType(MessageType.IMAGE)
+//                        .type(NotificationType.IMAGE)
+//                        .build()
+//        );
+//    }
+
     @Override
-    public void uploadMediaMessage(String consultationId, MultipartFile file) {
-        String senderId = AuthenticatedUserUtil.getCurrentUserId();
+    public void uploadMediaMessage(String senderId, String consultationId, MultipartFile file) {
         Consultation consultation = consultationRepository.findById(consultationId)
                 .orElseThrow(() -> new ResourceNotFoundException("Consultation", "consultation ID", consultationId));
 
