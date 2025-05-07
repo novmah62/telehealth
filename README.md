@@ -82,13 +82,13 @@ The storage infrastructure is organized into three tiers:
 
 - **Elasticsearch:** Functions as an indexing layer for advanced analytics and log searches, synchronized via scheduled replication or Debezium Change Data Capture (CDC).
 
-### 3.4 Event Bus &amp; CDC
+### 3.4 Event Bus
 
-Apache Kafka serves as the backbone of the event-driven architecture, complemented by optional Debezium-based CDC to capture real-time changes from PostgreSQL, ensuring all critical updates are propagated to downstream services.
+Apache Kafka serves as the backbone of the event-driven architecture, ensuring reliable, real-time communication between system components
 
-### 3.5 Observability &amp; DevSecOps
+### 3.5 Observability
 
-OpenTelemetry collects metrics and distributed traces. Prometheus, Grafana, and Loki handle metrics, dashboards, and log monitoring, respectively. The CI/CD pipeline on GitLab performs builds, unit and integration tests, container vulnerability scans (Trivy, SonarQube), and deploys via GitOps with Argo CD. Infrastructure as Code (IaC) is secured using Terraform and Checkov, while runtime security is enforced by Falco.
+OpenTelemetry collects metrics and distributed traces. Prometheus, Grafana, and Loki handle metrics, dashboards, and log monitoring, respectively.
 
 ### 3.6 Saga Choreography
 
@@ -118,34 +118,60 @@ External systems or pharmacists can invoke GET /api/prescriptions/verify/{prescr
 Every operation (create, update, verify, use) publishes an event to Kafka and is recorded immutably. Each update generates a new version record with a timestamp, actor ID, and IP address to support end-to-end traceability.
 
 
-## 5. Business Workflow
+## 5. Infrastructure & CI/CD Pipeline
 
-### 5.1 Registration &amp; Initial Consultation
+<p align="center">
+  <img src="document/diagrams/telehealth-pipeline-architecture.drawio.png" alt="Architecture" width="1727">
+</p>
+
+### 5.1 Infrastructure Overview
+
+The solution is deployed across five Ubuntu servers: four on-premises VMs (GitLab server, build server, development server, and database server) and one Amazon EC2 instance hosting a private Docker Registry.
+
+### 5.2 GitLab CI/CD Pipeline Stages
+
+Every code push triggers a six-stage GitLab CI/CD pipeline, running on dedicated runners:
+
+| Stage                     | Description                                                                                         |
+|---------------------------|-----------------------------------------------------------------------------------------------------|
+| **Build**                 | The build server executes `mvn clean package` and builds Docker images tagged by commit SHA.       |
+| **Test Source Code**      | Static Application Security Testing (SAST) via SonarQube, unit tests (JUnit/Mockito) và integration tests (embedded H2/PostgreSQL). SonarQube enforces quality/security gates. |
+| **Push**                  | Push built Docker images to the private Harbor registry (EC2). Pipeline aborts if push fails.      |
+| **Security Scan Image**   | Trivy scans each container image for HIGH/CRITICAL CVEs; pipeline fails on any blocking vulnerability. |
+| **Deploy**                | Pull new images onto the development server via SSH and run `docker-compose down && docker-compose up -d`. |
+| **Security Scan Website** | DAST with Arachni against the staging URL, reporting XSS, CSRF, IDOR…                                 |
+| **Performance Testing**   | k6 simulates load (e.g. 50 virtual users for 2 minutes); fails if p95 latency > 300 ms or error rate > 3 %. |
+
+Logs, metrics, test reports, and scan artifacts are centrally stored for traceability and auditing.
+
+## 6. Business Workflow
+
+### 6.1 Registration &amp; Initial Consultation
 
 Patients register an account on the Telehealth platform by providing personal information and verifying via email or SMS. Upon activation, they may initiate a pharmacist-led pre-consultation through the Consultation Service to triage symptoms and determine next steps.
 
-### 5.2 Appointment Booking
+### 6.2 Appointment Booking
 
 For detailed clinical consultations, patients use the Appointment Service to schedule an appointment with a physician. The system validates patient credentials, verifies insurance coverage if applicable, and sends confirmation notifications via email, SMS, or push messages.
 
-### 5.3 Clinical Examination &amp; Diagnosis
+### 6.3 Clinical Examination &amp; Diagnosis
 
 Physicians conduct in-person examinations at a healthcare facility to observe symptoms, perform physical checks, and order necessary tests. All collected data — including symptoms, test results, and final diagnosis — is recorded in the Examination Service, which emits corresponding Kafka events for downstream processing.
 
-### 5.4 Prescription Issuance
+### 6.4 Prescription Issuance
 
 Based on the diagnosis, the physician issues an e-prescription via the Prescription Service. The system automatically generates a compliant code, applies digital signatures, encrypts the payload, and renders the SQRC.
 
-### 5.5 Medical Record Update
+### 6.5 Medical Record Update
 
 Immediately after issuance, the Medical Records Service aggregates data from Consultation, Diagnosis, Prescription, and Appointment services to update the patient’s electronic health record, preserving version history for all changes.
 
-### 5.6 Payment &amp; Insurance Processing
+### 6.6 Payment &amp; Insurance Processing
 
 Patients complete payment using the Billing Service, which integrates with Stripe or PayPal and verifies insurance claims through third-party APIs. Successful transactions emit payment.completed events, automatically updating records in the Medical Records Service.
 
 
-## 6. Benefits
+## 7. Benefits
 
 This solution delivers four key advantages:
 
