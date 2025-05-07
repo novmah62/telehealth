@@ -1,3 +1,11 @@
+db = db.getSiblingDB('admin');
+db.createUser({
+    user: "manhnv",
+    pwd: "06022003",
+    roles: [{ role: "root", db: "admin" }]
+});
+
+
 // Consultation Service
 db = db.getSiblingDB("consultation_service");
 // db.createUser({
