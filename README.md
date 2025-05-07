@@ -1,14 +1,15 @@
 # Professional Report: Secure Telehealth E-Prescription System
 
 ## 1. Introduction
+
 The digital transformation in healthcare is ushering in a new era that facilitates patient access to specialists and alleviates the burden on traditional medical facilities. Among these innovations, Telehealth systems not only enable remote consultations but also address the complex challenges of issuing and managing electronic prescriptions — which can be susceptible to forgery, unauthorized alterations, and misuse of sensitive medical information. This report presents a comprehensive solution based on a microservices architecture, event-driven design, and DevSecOps principles, incorporating an Edge layer, API Gateway, specialized functional services, strong authentication, digital signatures, secure QR codes (SQRC), immutable audit trails, and full compliance with Circular 04/2022/TT-BYT. The goal is to ensure that every e-prescription is issued securely, transparently, traceable, and fully lawful.
 
 
 ## 2. System Objectives
+
 The system targets five strategic objectives throughout the consultation, prescription, and medication delivery process:
 
 - **Authorized Issuance:** Only credentialed physicians may create prescriptions, eliminating the risk of unauthorized orders.
-
 
 - **Digital Signature Integrity:** Each prescription is sealed with an X.509 digital signature to guarantee content integrity and authenticity, preventing any tampering or forgery.
 
