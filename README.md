@@ -1,184 +1,226 @@
-# Professional Report: Secure Telehealth E-Prescription System
+# Secure Telehealth E-Prescription System
 
-## 1. Introduction
+English | [Tiếng Việt](README.vi.md)
 
-The digital transformation in healthcare is ushering in a new era that facilitates patient access to specialists and alleviates the burden on traditional medical facilities. Among these innovations, Telehealth systems not only enable remote consultations but also address the complex challenges of issuing and managing electronic prescriptions — which can be susceptible to forgery, unauthorized alterations, and misuse of sensitive medical information. This report presents a comprehensive solution based on a microservices architecture, event-driven design, and DevSecOps principles, incorporating an Edge layer, API Gateway, specialized functional services, strong authentication, digital signatures, secure QR codes (SQRC), immutable audit trails, and full compliance with Circular 04/2022/TT-BYT. The goal is to ensure that every e-prescription is issued securely, transparently, traceable, and fully lawful.
+## Project Description
 
+This project presents a comprehensive solution for a Secure Telehealth E-Prescription System. In the evolving landscape of digital healthcare, this system addresses the critical need for secure, transparent, and compliant electronic prescription management. Leveraging a microservices architecture, event-driven design, and DevSecOps principles, it incorporates robust features like an Edge layer, API Gateway, specialized functional services, strong authentication, digital signatures, secure QR codes (SQRC), immutable audit trails, and full compliance with Vietnamese regulations (Circular 04/2022/TT-BYT). The system's primary goal is to ensure that every e-prescription is issued securely, transparently, traceable, and fully lawful, mitigating risks of forgery, unauthorized alterations, and misuse of sensitive medical information.
 
-## 2. System Objectives
+## Table of Contents
 
-The system targets five strategic objectives throughout the consultation, prescription, and medication delivery process:
+- [Project Description](#project-description)
+- [System Objectives](#system-objectives)
+- [Key Features](#key-features)
+- [System Architecture](#system-architecture)
+    - [Edge Layer and API Gateway](#edge-layer-and-api-gateway)
+    - [Core Microservices](#core-microservices)
+    - [Data Storage](#data-storage)
+    - [Event Bus](#event-bus)
+    - [Observability](#observability)
+    - [Saga Choreography](#saga-choreography)
+- [E-Prescription Security Details](#e-prescription-security-details)
+    - [Authentication & Authorization](#authentication--authorization)
+    - [X.509 Digital Signatures](#x509-digital-signatures)
+    - [Secure QR Code (SQRC)](#secure-qr-code-sqrc)
+    - [Verification Endpoint](#verification-endpoint)
+    - [Audit Trail & Versioning](#audit-trail--versioning)
+- [Technology Stack](#technology-stack)
+- [Business Workflow](#business-workflow)
+    - [Registration & Initial Consultation](#registration--initial-consultation)
+    - [Appointment Booking](#appointment-booking)
+    - [Clinical Examination & Diagnosis](#clinical-examination--diagnosis)
+    - [Prescription Issuance](#prescription-issuance)
+    - [Medical Record Update](#medical-record-update)
+    - [Payment & Insurance Processing](#payment--insurance-processing)
+- [Infrastructure & CI/CD Pipeline](#infrastructure--cicd-pipeline)
+    - [Infrastructure Overview](#infrastructure-overview)
+    - [GitLab CI/CD Pipeline Stages](#gitlab-cicd-pipeline-stages)
+- [Benefits](#benefits)
 
-- **Authorized Issuance:** Only credentialed physicians may create prescriptions, eliminating the risk of unauthorized orders.
+## System Objectives
 
-- **Digital Signature Integrity:** Each prescription is sealed with an X.509 digital signature to guarantee content integrity and authenticity, preventing any tampering or forgery.
+The system focuses on achieving five strategic objectives across the consultation, prescription, and medication delivery process:
 
-- **Secure QR Code (SQRC):** SQRC enables pharmacies to verify an e-prescription’s status ("issued" or "used") without exposing its contents.
+-   **Authorized Issuance:** Restrict prescription creation solely to credentialed physicians.
+-   **Digital Signature Integrity:** Utilize X.509 digital signatures to guarantee content integrity and authenticity and prevent tampering.
+-   **Secure QR Code (SQRC):** Enable pharmacies to verify e-prescription status without exposing sensitive content.
+-   **Immutable Audit Trail:** Maintain a tamper-proof log of all actions for comprehensive auditing and investigation.
+-   **Regulatory Compliance:** Fully adhere to Circular 04/2022/TT-BYT and related directives.
 
-- **Immutable Audit Trail:** A tamper-proof audit log captures every action in real time, supporting comprehensive auditing, regulatory inspection, and incident investigation.
+## Key Features
 
-- **Regulatory Compliance:** The system fully adheres to the provisions of Circular 04/2022/TT-BYT and associated directives concerning QR code format and data retrieval.
+Based on the objectives and description, the system provides the following key features:
 
+-   Support for initial pharmacist-led consultations via chat.
+-   Appointment scheduling and cancellation management.
+-   Recording of clinical examination details, test results, and diagnoses.
+-   Issuance of electronic prescriptions compliant with regulations.
+-   Automatic generation of prescription codes compliant with Circular 04/2022/TT-BYT.
+-   Application of X.509 digital signatures to prescriptions.
+-   Generation of Secure QR Codes (SQRC) for prescriptions.
+-   Updating and maintaining versioned electronic health records.
+-   Payment processing and insurance integration.
+-   Sending notifications via email, SMS, and push messages.
+-   Executing analytical queries and generating KPI reports.
+-   Recording immutable audit logs for all events.
+-   User authentication (OAuth2/OpenID Connect) and authorization by role/scope.
+-   Mandatory Multi-Factor Authentication (MFA) for physicians.
+-   Secure API endpoint for verifying prescription status.
 
-## 3. System Architecture
+## System Architecture
 
 <p align="center">
   <img src="document/diagrams/telehealth-v2-global-architecture.drawio.png" alt="Architecture" width="1727">
 </p>
 
-### 3.1 Edge Layer and API Gateway
+The system is built on a microservices architecture with an event-driven design.
 
-All incoming user requests are initially handled at the Edge layer via Spring Cloud Gateway or Kong. Here, the Gateway performs OAuth2/OpenID Connect authentication through Keycloak, enforces mandatory multi-factor authentication (MFA) for physicians, issues JWT tokens with role and scope claims, and applies rate-limiting and basic Web Application Firewall (WAF) protections to guard against API-based attacks.
+### Edge Layer and API Gateway
 
-### 3.2 Core Microservices
+All incoming user requests are initially handled at the Edge layer via Spring Cloud Gateway or Kong. The Gateway performs OAuth2/OpenID Connect authentication through Keycloak, enforces mandatory MFA for physicians, issues JWT tokens with role and scope claims, and applies rate-limiting and basic Web Application Firewall (WAF) protections.
 
-The system comprises nine primary microservices, communicating through Apache Kafka to ensure an event-driven design and horizontal scalability:
+### Core Microservices
 
-| **Service**                | **Description** |
-|----------------------------|-----------------|
-| **Consultation Service**   | Facilitates preliminary consultations through WebSocket-based chat for pharmacist-led triage. Logs all interactions without interfering in detailed clinical examinations. |
-| **Appointment Service**    | Manages scheduling and cancellation of appointments, emits `appointment.created` and `appointment.cancelled` events, and maintains appointment history. |
-| **Examination Service**    | Records patient symptoms, test results, and final diagnoses to inform prescription generation. |
-| **Prescription Service**   | Issues e-prescriptions. Only authorized physicians may perform CRUD operations. Generates codes compliant with Circular 04/2022/TT-BYT, digitally signs documents, renders SQRC, and updates prescription status. |
-| **Medical Records Service**| Aggregates data from Consultation, Examination, Prescription, and Appointment services. Supports versioning and tightly controlled query APIs. |
-| **Billing Service**        | Processes payments (e.g., Stripe, PayPal), issues invoices, and emits `payment.completed` events. |
-| **Notification Service**   | Sends email, SMS, and push notifications. Integrates with a scheduler and Kafka to dispatch appointment reminders and alerts. |
-| **Analytics Service**      | Executes analytical queries and generates KPI reports. |
-| **Audit Log Service**      | Captures immutable logs with timestamps, actor IDs, and IP addresses for traceable auditing. |
+The system comprises nine primary microservices, communicating through Apache Kafka:
 
-[//]: # (- **Consultation Service:** Facilitates preliminary consultations through WebSocket-based chat for pharmacist-led triage, logging all interactions without interfering in detailed clinical examinations.)
+| Service                | Description                                                                                                                                  |
+|----------------------------|----------------------------------------------------------------------------------------------------------------------------------------------|
+| **Consultation Service** | Facilitates preliminary pharmacist-led consultations via WebSocket chat and logs interactions.                                               |
+| **Appointment Service** | Manages appointment scheduling and cancellation, emits events, and maintains history.                                                    |
+| **Examination Service** | Records patient symptoms, test results, and diagnoses.                                                             |
+| **Prescription Service** | Issues e-prescriptions (physician-only CRUD), generates compliant codes, digitally signs, renders SQRC, manages status.  |
+| **Medical Records Service**| Aggregates data, supports versioning, provides tightly controlled query APIs.                                              |
+| **Billing Service** | Processes payments (Stripe, PayPal), issues invoices, emits payment completed events.                                                      |
+| **Notification Service** | Sends email, SMS, push notifications, integrates with scheduler and Kafka.                                                          |
+| **Analytics Service** | Handles complex analytical queries and KPI reporting.                                                                                       |
+| **Audit Log Service** | Captures immutable logs of all events with timestamps, actor IDs, and IP addresses.                                                                      |
 
-[//]: # ()
-[//]: # (- **Appointment Service:** Manages scheduling and cancellation of appointments, issues appointment.created and appointment.cancelled events, and maintains a complete history.)
+### Data Storage
 
-[//]: # ()
-[//]: # (- **Examination Service:** Records patient symptoms, test results, and final diagnoses to inform prescription generation.)
+The storage infrastructure utilizes:
 
-[//]: # ()
-[//]: # (- **Prescription Service:** Responsible for issuing e-prescriptions; only authorized physicians may perform CRUD operations. The service automatically generates codes compliant with Circular 04/2022/TT-BYT, signs the document with X.509, applies a sign-then-encrypt process to render the SQRC, verifies internally, and updates the status from "issued" to "used".)
+-   **PostgreSQL:** For core services requiring ACID properties and complex relational queries (Appointment, Examination, Billing, Medical Records, Prescription).
+-   **MongoDB:** For services requiring schema flexibility.
+-   **Elasticsearch:** For indexing, advanced analytics, and log searches, synchronized via scheduled replication or Debezium CDC.
 
-[//]: # ()
-[//]: # (- **Medical Records Service:** Aggregates records from Consultation, Diagnosis, Prescription, and Appointment services, supports versioning, and provides tightly controlled query APIs.)
+### Event Bus
 
-[//]: # ()
-[//]: # (- **Billing Service:** Processes payments via Stripe or PayPal, issues electronic invoices, and emits payment.completed events.)
+Apache Kafka provides reliable, real-time communication between system components, enabling the event-driven architecture.
 
-[//]: # ()
-[//]: # (- **Notification Service:** Enqueues email, SMS, and push notifications, integrates with a scheduler and Kafka to send appointment reminders, test result alerts, and prescription notifications.)
+### Observability
 
-[//]: # ()
-[//]: # (- **Analytics Service:** Handles complex analytical queries and KPI reporting.)
+OpenTelemetry collects metrics and distributed traces. Prometheus, Grafana, and Loki are used for metrics collection, dashboarding, and log monitoring.
 
-[//]: # ()
-[//]: # (- **Audit Log Service:** Captures immutable logs of all events with timestamps, actor IDs, and IP addresses, ensuring a comprehensive audit trail.)
+### Saga Choreography
 
-### 3.3 Data Storage
+A decentralized Saga pattern using Kafka events coordinates service interactions. Compensating events handle failures to ensure consistency.
 
-The storage infrastructure is organized into three tiers:
+## E-Prescription Security Details
 
-- **PostgreSQL:** Serves the five core services (Appointment, Examination, Billing, Medical Records, Prescription) with ACID guarantees and support for complex relational queries.
+Robust security measures are integrated throughout the system:
 
-- **MongoDB:** Hosts document-oriented data for the remaining services, providing schema flexibility.
+### Authentication & Authorization
 
-- **Elasticsearch:** Functions as an indexing layer for advanced analytics and log searches, synchronized via scheduled replication or Debezium Change Data Capture (CDC).
+Keycloak manages OAuth2/OpenID Connect authentication with mandatory MFA for physicians. JWT tokens with embedded claims are validated at the Edge Gateway.
 
-### 3.4 Event Bus
+### X.509 Digital Signatures
 
-Apache Kafka serves as the backbone of the event-driven architecture, ensuring reliable, real-time communication between system components
+Certificates from a health authority are used for digital signatures. Private keys are stored in an HSM, and public keys are distributed. The Prescription Service signs documents (PDF/JSON) before encryption.
 
-### 3.5 Observability
+### Secure QR Code (SQRC)
 
-OpenTelemetry collects metrics and distributed traces. Prometheus, Grafana, and Loki handle metrics, dashboards, and log monitoring, respectively.
+A sign-then-encrypt model is employed. The encrypted payload (Prescription ID, SHA-256 hash, digital signature) is embedded in the QR code. Verification requires calling the Prescription Service endpoint.
 
-### 3.6 Saga Choreography
+### Verification Endpoint
 
-The system employs a decentralized Saga pattern using Kafka events for service coordination. For example, issuing a prescription triggers a sequence of events across Notification, Medical Records, and Audit services. In case of failures, a compensating event (prescription.revoked) ensures consistent rollback behavior.
+An external endpoint (`GET /api/prescriptions/verify/{prescriptionId}`) allows authorized parties (e.g., pharmacies) to retrieve a JSON response containing `valid`, `status` (issued | used | expired), `physicianDetails`, `issuedAt`, and `expiresAt` fields.
 
+### Audit Trail & Versioning
 
-## 4. E-Prescription Security Details
+Every operation is logged immutably to Kafka and the Audit Log Service. Updates create new version records with timestamps, actor IDs, and IP addresses for full traceability.
 
-### 4.1 Authentication &amp; Authorization
+## Technology Stack
 
-Keycloak provides OAuth2/OpenID Connect authentication with mandatory MFA for physicians. JWT tokens include embedded role and scope claims, all validated at the Edge Gateway.
+The project utilizes the following key technologies:
 
-### 4.2 X.509 Digital Signatures
+-   **Gateway/API Management:** Spring Cloud Gateway, Kong
+-   **Identity & Access Management:** Keycloak (OAuth2/OpenID Connect, JWT, MFA)
+-   **Event Streaming:** Apache Kafka
+-   **Database:** PostgreSQL (Relational), MongoDB (Document)
+-   **Search & Analytics:** Elasticsearch
+-   **Change Data Capture (CDC):** Debezium
+-   **Observability:** OpenTelemetry, Prometheus, Grafana, Loki
+-   **Security:** X.509 Digital Signatures, Hardware Security Module (HSM), SQRC (Sign-then-Encrypt), SAST (SonarQube), DAST (Arachni), Image Scanning (Trivy)
+-   **Build & Packaging:** Maven, Docker
+-   **CI/CD:** GitLab CI/CD
+-   **Testing:** JUnit, Mockito, H2 (embedded DB), k6 (Performance Testing)
+-   **Deployment:** Ubuntu, docker-compose, Harbor (Private Docker Registry), SSH
 
-Certificates are issued by a health authority, with private keys stored in a Hardware Security Module (HSM) and public keys distributed within the network. The Prescription Service applies a digital signature to each document (PDF/JSON) prior to encryption.
+## Business Workflow
 
-### 4.3 Secure QR Code (SQRC)
+The system supports the following business workflow:
 
-A sign-then-encrypt model is used: the payload (Prescription ID, SHA-256 hash, and digital signature) is encrypted; the QR code displays only the ciphertext block. Pharmacies must call the Prescription Service to decrypt and verify the content.
+### Registration & Initial Consultation
 
-### 4.4 Verification Endpoint
+Patients register and verify their accounts. They can then initiate a pharmacist-led pre-consultation via the Consultation Service for initial triage.
 
-External systems or pharmacists can invoke GET /api/prescriptions/verify/{prescriptionId} to retrieve a JSON response containing valid, status (issued | used | expired), physician details, issuedAt, and expiresAt fields.
+### Appointment Booking
 
-### 4.5 Audit Trail &amp; Versioning
+Patients schedule appointments with physicians using the Appointment Service, which validates credentials and sends notifications.
 
-Every operation (create, update, verify, use) publishes an event to Kafka and is recorded immutably. Each update generates a new version record with a timestamp, actor ID, and IP address to support end-to-end traceability.
+### Clinical Examination & Diagnosis
 
+Physicians conduct in-person examinations, recording symptoms, test results, and diagnoses in the Examination Service. Relevant Kafka events are emitted.
 
-## 5. Infrastructure & CI/CD Pipeline
+### Prescription Issuance
+
+Based on the diagnosis, physicians issue e-prescriptions via the Prescription Service. The system handles compliant code generation, digital signing, encryption, and SQRC rendering.
+
+### Medical Record Update
+
+Immediately after issuance, the Medical Records Service aggregates data from various services to update the patient's electronic health record, maintaining version history.
+
+### Payment & Insurance Processing
+
+Patients complete payments using the Billing Service, which integrates with payment gateways and insurance APIs. Successful payments trigger events that update medical records.
+
+## Infrastructure & CI/CD Pipeline
 
 <p align="center">
   <img src="document/diagrams/telehealth-pipeline-architecture.drawio.png" alt="Architecture" width="1727">
 </p>
 
-### 5.1 Infrastructure Overview
+### Infrastructure Overview
 
-The solution is deployed across five Ubuntu servers: four on-premises VMs (GitLab server, build server, development server, and database server) and one Amazon EC2 instance hosting a private Docker Registry.
+The solution is deployed across five Ubuntu servers: four on-premises VMs (GitLab server, build server, development server, database server) and one Amazon EC2 instance (hosting a private Docker Registry).
 
-### 5.2 GitLab CI/CD Pipeline Stages
+### GitLab CI/CD Pipeline Stages
 
-Every code push triggers a six-stage GitLab CI/CD pipeline, running on dedicated runners:
+A six-stage GitLab CI/CD pipeline is triggered by every code push, running on dedicated runners:
 
-| Stage                     | Description                                                                                         |
-|---------------------------|-----------------------------------------------------------------------------------------------------|
-| **Build**                 | The build server executes `mvn clean package` and builds Docker images tagged by commit SHA.       |
-| **Test Source Code**      | Static Application Security Testing (SAST) via SonarQube, unit tests (JUnit/Mockito) và integration tests (embedded H2/PostgreSQL). SonarQube enforces quality/security gates. |
-| **Push**                  | Push built Docker images to the private Harbor registry (EC2). Pipeline aborts if push fails.      |
-| **Security Scan Image**   | Trivy scans each container image for HIGH/CRITICAL CVEs; pipeline fails on any blocking vulnerability. |
-| **Deploy**                | Pull new images onto the development server via SSH and run `docker-compose down && docker-compose up -d`. |
-| **Security Scan Website** | DAST with Arachni against the staging URL, reporting XSS, CSRF, IDOR…                                 |
-| **Performance Testing**   | k6 simulates load (e.g. 50 virtual users for 2 minutes); fails if p95 latency > 300 ms or error rate > 3 %. |
+| Stage                     | Description                                                                                                                               |
+|---------------------------|-------------------------------------------------------------------------------------------------------------------------------------------|
+| **Build** | The build server executes `mvn clean package` and builds Docker images tagged by commit SHA.                                                               |
+| **Test Source Code** | Runs SAST (SonarQube), unit tests (JUnit/Mockito), and integration tests (embedded H2/PostgreSQL). SonarQube enforces quality/security gates. |
+| **Push** | Pushes Docker images to the private Harbor registry. Fails if push is unsuccessful.                                                       |
+| **Security Scan Image** | Trivy scans container images for HIGH/CRITICAL CVEs. Fails on blocking vulnerabilities.                                             |
+| **Deploy** | Pulls new images onto the development server via SSH and deploys using `docker-compose`.                                                    |
+| **Security Scan Website** | Performs DAST with Arachni against the staging URL to find vulnerabilities like XSS, CSRF, IDOR.                                            |
+| **Performance Testing** | Simulates load using k6 (e.g., 50 virtual users for 2 minutes). Fails if p95 latency > 300 ms or error rate > 3%.                         |
 
-Logs, metrics, test reports, and scan artifacts are centrally stored for traceability and auditing.
+Logs, metrics, test reports, and scan artifacts are centrally stored for traceability.
 
-## 6. Business Workflow
+## Benefits
 
-### 6.1 Registration &amp; Initial Consultation
+The Secure Telehealth E-Prescription System delivers four key advantages:
 
-Patients register an account on the Telehealth platform by providing personal information and verifying via email or SMS. Upon activation, they may initiate a pharmacist-led pre-consultation through the Consultation Service to triage symptoms and determine next steps.
+-   **Absolute Security:** Digital signatures and SQRC eliminate the risk of prescription forgery or tampering.
+-   **Complete Transparency:** An immutable audit trail ensures end-to-end visibility and traceability, facilitating audits and regulatory inspections.
+-   **Regulatory Compliance:** The system rigorously adheres to health ministry guidelines on prescription formatting, data retention, and expiration.
+-   **Scalable & Agile Architecture:** Microservices, event-driven design, and DevSecOps practices enable rapid deployment, seamless scalability, and straightforward third-party integrations.
 
-### 6.2 Appointment Booking
+## Further Information
 
-For detailed clinical consultations, patients use the Appointment Service to schedule an appointment with a physician. The system validates patient credentials, verifies insurance coverage if applicable, and sends confirmation notifications via email, SMS, or push messages.
+For a more detailed analysis of the project, including in-depth design choices, implementation details, and evaluation results, please refer to the full project report:
 
-### 6.3 Clinical Examination &amp; Diagnosis
-
-Physicians conduct in-person examinations at a healthcare facility to observe symptoms, perform physical checks, and order necessary tests. All collected data — including symptoms, test results, and final diagnosis — is recorded in the Examination Service, which emits corresponding Kafka events for downstream processing.
-
-### 6.4 Prescription Issuance
-
-Based on the diagnosis, the physician issues an e-prescription via the Prescription Service. The system automatically generates a compliant code, applies digital signatures, encrypts the payload, and renders the SQRC.
-
-### 6.5 Medical Record Update
-
-Immediately after issuance, the Medical Records Service aggregates data from Consultation, Diagnosis, Prescription, and Appointment services to update the patient’s electronic health record, preserving version history for all changes.
-
-### 6.6 Payment &amp; Insurance Processing
-
-Patients complete payment using the Billing Service, which integrates with Stripe or PayPal and verifies insurance claims through third-party APIs. Successful transactions emit payment.completed events, automatically updating records in the Medical Records Service.
-
-
-## 7. Benefits
-
-This solution delivers four key advantages:
-
-- **Absolute Security:** Digital signatures and SQRC eliminate the risk of prescription forgery or tampering.
-
-- **Complete Transparency:** A fully immutable audit trail ensures end-to-end visibility and traceability, facilitating audits and regulatory inspections.
-
-- **Regulatory Compliance:** The system rigorously adheres to health ministry guidelines on prescription formatting, data retention, and expiration.
-
-- **Scalable &amp; Agile Architecture:** Microservices, event-driven design, and DevSecOps practices enable rapid deployment, seamless scalability, and straightforward third-party integrations.
+[Link to Detailed Project Report](document/report/REPORT.md)
