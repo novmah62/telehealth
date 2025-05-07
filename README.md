@@ -22,6 +22,10 @@ The system targets five strategic objectives throughout the consultation, prescr
 
 ## 3. System Architecture
 
+<p align="center">
+  <img src="document/diagrams/telehealth-v2-global-architecture.drawio.png" alt="Architecture" width="1727">
+</p>
+
 ### 3.1 Edge Layer and API Gateway
 
 All incoming user requests are initially handled at the Edge layer via Spring Cloud Gateway or Kong. Here, the Gateway performs OAuth2/OpenID Connect authentication through Keycloak, enforces mandatory multi-factor authentication (MFA) for physicians, issues JWT tokens with role and scope claims, and applies rate-limiting and basic Web Application Firewall (WAF) protections to guard against API-based attacks.
@@ -30,29 +34,49 @@ All incoming user requests are initially handled at the Edge layer via Spring Cl
 
 The system comprises nine primary microservices, communicating through Apache Kafka to ensure an event-driven design and horizontal scalability:
 
-- **Consultation Service:** Facilitates preliminary consultations through WebSocket-based chat for pharmacist-led triage, logging all interactions without interfering in detailed clinical examinations.
+| **Service**                | **Description** |
+|----------------------------|-----------------|
+| **Consultation Service**   | Facilitates preliminary consultations through WebSocket-based chat for pharmacist-led triage. Logs all interactions without interfering in detailed clinical examinations. |
+| **Appointment Service**    | Manages scheduling and cancellation of appointments, emits `appointment.created` and `appointment.cancelled` events, and maintains appointment history. |
+| **Examination Service**    | Records patient symptoms, test results, and final diagnoses to inform prescription generation. |
+| **Prescription Service**   | Issues e-prescriptions. Only authorized physicians may perform CRUD operations. Generates codes compliant with Circular 04/2022/TT-BYT, digitally signs documents, renders SQRC, and updates prescription status. |
+| **Medical Records Service**| Aggregates data from Consultation, Examination, Prescription, and Appointment services. Supports versioning and tightly controlled query APIs. |
+| **Billing Service**        | Processes payments (e.g., Stripe, PayPal), issues invoices, and emits `payment.completed` events. |
+| **Notification Service**   | Sends email, SMS, and push notifications. Integrates with a scheduler and Kafka to dispatch appointment reminders and alerts. |
+| **Analytics Service**      | Executes analytical queries and generates KPI reports. |
+| **Audit Log Service**      | Captures immutable logs with timestamps, actor IDs, and IP addresses for traceable auditing. |
 
-- **Appointment Service:** Manages scheduling and cancellation of appointments, issues appointment.created and appointment.cancelled events, and maintains a complete history.
+[//]: # (- **Consultation Service:** Facilitates preliminary consultations through WebSocket-based chat for pharmacist-led triage, logging all interactions without interfering in detailed clinical examinations.)
 
-- **Diagnosis Service:** Records patient symptoms, test results, and final diagnoses to inform prescription generation.
+[//]: # ()
+[//]: # (- **Appointment Service:** Manages scheduling and cancellation of appointments, issues appointment.created and appointment.cancelled events, and maintains a complete history.)
 
-- **Prescription Service:** Responsible for issuing e-prescriptions; only authorized physicians may perform CRUD operations. The service automatically generates codes compliant with Circular 04/2022/TT-BYT, signs the document with X.509, applies a sign-then-encrypt process to render the SQRC, verifies internally, and updates the status from "issued" to "used".
+[//]: # ()
+[//]: # (- **Examination Service:** Records patient symptoms, test results, and final diagnoses to inform prescription generation.)
 
-- **Medical Records Service:** Aggregates records from Consultation, Diagnosis, Prescription, and Appointment services, supports versioning, and provides tightly controlled query APIs.
+[//]: # ()
+[//]: # (- **Prescription Service:** Responsible for issuing e-prescriptions; only authorized physicians may perform CRUD operations. The service automatically generates codes compliant with Circular 04/2022/TT-BYT, signs the document with X.509, applies a sign-then-encrypt process to render the SQRC, verifies internally, and updates the status from "issued" to "used".)
 
-- **Billing Service:** Processes payments via Stripe or PayPal, issues electronic invoices, and emits payment.completed events.
+[//]: # ()
+[//]: # (- **Medical Records Service:** Aggregates records from Consultation, Diagnosis, Prescription, and Appointment services, supports versioning, and provides tightly controlled query APIs.)
 
-- **Notification Service:** Enqueues email, SMS, and push notifications, integrates with a scheduler and Kafka to send appointment reminders, test result alerts, and prescription notifications.
+[//]: # ()
+[//]: # (- **Billing Service:** Processes payments via Stripe or PayPal, issues electronic invoices, and emits payment.completed events.)
 
-- **Analytics Service:** Handles complex analytical queries and KPI reporting.
+[//]: # ()
+[//]: # (- **Notification Service:** Enqueues email, SMS, and push notifications, integrates with a scheduler and Kafka to send appointment reminders, test result alerts, and prescription notifications.)
 
-- **Audit Log Service:** Captures immutable logs of all events with timestamps, actor IDs, and IP addresses, ensuring a comprehensive audit trail.
+[//]: # ()
+[//]: # (- **Analytics Service:** Handles complex analytical queries and KPI reporting.)
+
+[//]: # ()
+[//]: # (- **Audit Log Service:** Captures immutable logs of all events with timestamps, actor IDs, and IP addresses, ensuring a comprehensive audit trail.)
 
 ### 3.3 Data Storage
 
 The storage infrastructure is organized into three tiers:
 
-- **PostgreSQL:** Serves the five core services (Appointment, Diagnosis, Billing, Medical Records, Prescription) with ACID guarantees and support for complex relational queries.
+- **PostgreSQL:** Serves the five core services (Appointment, Examination, Billing, Medical Records, Prescription) with ACID guarantees and support for complex relational queries.
 
 - **MongoDB:** Hosts document-oriented data for the remaining services, providing schema flexibility.
 
@@ -106,7 +130,7 @@ For detailed clinical consultations, patients use the Appointment Service to sch
 
 ### 5.3 Clinical Examination &amp; Diagnosis
 
-Physicians conduct in-person examinations at a healthcare facility to observe symptoms, perform physical checks, and order necessary tests. All collected data — including symptoms, test results, and final diagnosis — is recorded in the Diagnosis Service, which emits corresponding Kafka events for downstream processing.
+Physicians conduct in-person examinations at a healthcare facility to observe symptoms, perform physical checks, and order necessary tests. All collected data — including symptoms, test results, and final diagnosis — is recorded in the Examination Service, which emits corresponding Kafka events for downstream processing.
 
 ### 5.4 Prescription Issuance
 
@@ -119,6 +143,7 @@ Immediately after issuance, the Medical Records Service aggregates data from Con
 ### 5.6 Payment &amp; Insurance Processing
 
 Patients complete payment using the Billing Service, which integrates with Stripe or PayPal and verifies insurance claims through third-party APIs. Successful transactions emit payment.completed events, automatically updating records in the Medical Records Service.
+
 
 ## 6. Benefits
 
