@@ -1,21 +1,20 @@
 package com.drewsec.appointment_service.dto.response;
 
-import com.drewsec.appointment_service.enumType.AppointmentStatus;
+import lombok.Builder;
 
-import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+@Builder
 public record AppointmentResponse(
-
-        UUID id,
-        UUID doctorId,
+        UUID appointmentId,
         UUID patientId,
+        UUID doctorId,
         LocalDateTime startTime,
         LocalDateTime endTime,
-        AppointmentStatus status,
-        String reason,
-        Instant createdAt,
-        Instant updatedAt
-
-) { }
+        String status,
+        String description,
+        UUID slotId,
+        LocalDateTime createdAt,
+        LocalDateTime updatedAt
+) {}
