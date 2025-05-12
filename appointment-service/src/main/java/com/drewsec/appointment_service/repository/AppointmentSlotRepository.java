@@ -24,9 +24,6 @@ public interface AppointmentSlotRepository extends JpaRepository<AppointmentSlot
             LocalDateTime slotStartTime,
             LocalDateTime slotEndTime);
 
-    // Find an available slot by ID
-    Optional<AppointmentSlot> findByIdAndIsBooked(UUID slotId, Boolean isBooked);
-
     // Custom: find free slots in a date range for a doctor
     @Query("SELECT s FROM AppointmentSlot s " +
             "JOIN s.doctorAvailability da " +
