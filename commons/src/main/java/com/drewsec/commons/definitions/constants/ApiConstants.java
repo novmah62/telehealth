@@ -19,7 +19,6 @@ public class ApiConstants {
     public static final String CONSULTATION_COMPLETED = "Consultation completed";
     public static final String CONSULTATION_ALREADY_CLOSED = "Consultation already closed or invalid status";
     public static final String INVALID_CONSULTATION_ACCESS = "You are not part of this consultation";
-
     public static final String PATIENT_CONSULTATIONS_FETCHED = "Patient consultations fetched";
     public static final String CONSULTANT_CONSULTATIONS_FETCHED = "Consultant consultations fetched";
     public static final String PENDING_CONSULTATIONS_FETCHED = "Pending consultations fetched";
@@ -30,5 +29,22 @@ public class ApiConstants {
     public static final String MEDIA_UPLOADED = "Media uploaded and message sent";
     public static final String MESSAGES_FETCHED = "Messages fetched";
     public static final String MESSAGES_FETCHED_PAGED = "Messages fetched paged";
+
+    // Appointment messages
+    public static final String APPOINTMENT_BOOKED = "Appointment booked";
+    public static final String APPOINTMENT_CANCELLED = "Appointment cancelled";
+    public static final String DOCTOR_NEXT_APPOINTMENTS_FETCHED = "Doctor next appointments fetched";
+    public static final String PATIENT_APPOINTMENTS_FETCHED = "Patient appointments fetched";
+
+    // Slot messages
+    public static final String SLOT_FETCHED = "Slot fetched successfully";
+    public static final String FREE_SLOTS_FETCHED = "Free slots fetched successfully";
+    public static final String SLOTS_BY_AVAILABILITY_FETCHED = "Slots by availability fetched successfully";
+    public static final String BOOKED_SLOTS_COUNT_FETCHED = "Booked slots count per day fetched successfully";
+
+    // Availability messages
+    public static final String AVAILABILITY_CREATED = "Availability created successfully";
+    public static final String DOCTOR_AVAILABILITIES_FETCHED = "Doctor availabilities fetched";
+    public static final String AVAILABLE_WITH_SLOTS_FETCHED = "Available availabilities with slots fetched";
 
 }

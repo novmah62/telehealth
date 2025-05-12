@@ -18,6 +18,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -56,13 +57,39 @@ public class AppointmentSlotServiceImpl implements AppointmentSlotService {
             cursor = cursor.plusHours(1);
         }
 
-        List<AppointmentSlot> saved = slotRepo.saveAll(slots);
+        slotRepo.saveAll(slots);
     }
 
     @Override
-    public List<AppointmentSlotResponse> listFreeSlots(UUID doctorId, LocalDate from, LocalDate to) {
+    public AppointmentSlotResponse getSlotById(UUID slotId) {
+        return slotRepo.findById(slotId)
+                .map(AppointmentSlotMapper::toResponse)
+                .orElseThrow(() -> new ResourceNotFoundException("AppointmentSlot", "Slot ID", slotId.toString()));
+    }
+
+    @Override
+    public List<AppointmentSlotResponse> listFreeSlotsByDoctor(UUID doctorId, LocalDate from, LocalDate to) {
         return slotRepo.findFreeSlotsByDoctorAndDateRange(doctorId, from, to).stream()
                 .map(AppointmentSlotMapper::toResponse)
                 .collect(Collectors.toList());
     }
+
+    @Override
+    public List<AppointmentSlotResponse> listSlotsByAvailability(UUID availabilityId, Boolean isBooked) {
+        return slotRepo.findByDoctorAvailabilityIdAndIsBooked(availabilityId, isBooked).stream()
+                .map(AppointmentSlotMapper::toResponse)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public Map<LocalDate, Long> countBookedSlotsPerDay(UUID doctorId, LocalDate startDate, LocalDate endDate) {
+        List<Object[]> results = slotRepo.countBookedSlotsPerDay(doctorId, startDate, endDate);
+        return results.stream()
+                .collect(Collectors.toMap(
+                        obj -> ((LocalDate) obj[0]),
+                        obj -> ((Long) obj[1])
+                ));
+    }
+
+
 }

@@ -9,8 +9,8 @@ import java.util.UUID;
 
 public interface DoctorAvailabilityService {
 
-    DoctorAvailabilityResponse createAvailability(DoctorAvailabilityRequest request);
+    DoctorAvailabilityResponse createAvailability(UUID doctorId, DoctorAvailabilityRequest request);
     List<DoctorAvailabilityResponse> listByDoctorAndDate(UUID doctorId, LocalDate date);
-    List<DoctorAvailabilityResponse> listAvailableWithSlots(UUID doctorId, LocalDate from, LocalDate to);
+    List<DoctorAvailabilityResponse> listAvailable(UUID doctorId, LocalDate from, LocalDate to);
 
 }

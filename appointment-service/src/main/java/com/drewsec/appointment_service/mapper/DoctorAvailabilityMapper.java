@@ -8,7 +8,6 @@ public class DoctorAvailabilityMapper {
 
     public static DoctorAvailability toEntity(DoctorAvailabilityRequest req) {
         var entity = new DoctorAvailability();
-        entity.setDoctorId(req.doctorId());
         entity.setAvailableDate(req.availableDate());
         entity.setWorkStart(req.workStart());
         entity.setWorkEnd(req.workEnd());

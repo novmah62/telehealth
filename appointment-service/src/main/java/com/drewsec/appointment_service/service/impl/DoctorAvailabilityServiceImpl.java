@@ -23,11 +23,12 @@ public class DoctorAvailabilityServiceImpl implements DoctorAvailabilityService 
 
     @Override
     @Transactional
-    public DoctorAvailabilityResponse createAvailability(DoctorAvailabilityRequest req) {
-        if (availabilityRepo.existsByDoctorIdAndAvailableDate(req.doctorId(), req.availableDate())) {
+    public DoctorAvailabilityResponse createAvailability(UUID doctorId, DoctorAvailabilityRequest req) {
+        if (availabilityRepo.existsByDoctorIdAndAvailableDate(doctorId, req.availableDate())) {
             throw new IllegalArgumentException("Availability already exists for this date");
         }
         var entity = DoctorAvailabilityMapper.toEntity(req);
+        entity.setDoctorId(doctorId);
         var saved = availabilityRepo.save(entity);
 
         // Generate slots asynchronously
@@ -44,7 +45,7 @@ public class DoctorAvailabilityServiceImpl implements DoctorAvailabilityService 
     }
 
     @Override
-    public List<DoctorAvailabilityResponse> listAvailableWithSlots(UUID doctorId, LocalDate from, LocalDate to) {
+    public List<DoctorAvailabilityResponse> listAvailable(UUID doctorId, LocalDate from, LocalDate to) {
         return availabilityRepo.findAvailableWithFreeSlots(doctorId, from, to).stream()
                 .map(DoctorAvailabilityMapper::toResponse)
                 .collect(Collectors.toList());

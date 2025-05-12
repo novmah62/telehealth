@@ -12,7 +12,6 @@ public class AppointmentMapper {
 
     public static Appointment toEntity(AppointmentRequest req, AppointmentSlot slot) {
         var entity = new Appointment();
-        entity.setPatientId(req.patientId());
         entity.setDoctorId(req.doctorId());
         entity.setSlot(slot);
         entity.setDescription(req.description());

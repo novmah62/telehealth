@@ -10,6 +10,7 @@ import com.drewsec.appointment_service.mapper.AppointmentMapper;
 import com.drewsec.appointment_service.repository.AppointmentRepository;
 import com.drewsec.appointment_service.repository.AppointmentSlotRepository;
 import com.drewsec.appointment_service.service.AppointmentService;
+import com.drewsec.commons.exception.BadRequestException;
 import com.drewsec.commons.exception.ConflictException;
 import com.drewsec.commons.exception.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -32,7 +33,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 
     @Override
     @Transactional
-    public AppointmentResponse bookAppointment(AppointmentRequest request) {
+    public AppointmentResponse bookAppointment(UUID patientId, AppointmentRequest request) {
         // Validate slot exists
         AppointmentSlot slot = slotRepository.findById(request.slotId())
                 .orElseThrow(() -> new ResourceNotFoundException("Slot", "slot ID", request.slotId().toString()));
@@ -54,6 +55,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 
         // Map request to entity
         Appointment entity = AppointmentMapper.toEntity(request, slot);
+        entity.setPatientId(patientId);
 
         // Persist
         Appointment saved = appointmentRepository.save(entity);
@@ -68,11 +70,15 @@ public class AppointmentServiceImpl implements AppointmentService {
 
     @Override
     @Transactional
-    public void cancelAppointment(UUID appointmentId, String reason) {
+    public void cancelAppointment(UUID doctorId, UUID appointmentId, String reason) {
         Appointment appt = appointmentRepository.findById(appointmentId)
                 .orElseThrow(() -> new ResourceNotFoundException("Appointment", "Appointment ID", appointmentId.toString()));
         if (appt.getStatus() == AppointmentStatus.CANCELED) {
             return; // idempotent
+        }
+        boolean isParticipant = doctorId.equals(appt.getDoctorId());
+        if (!isParticipant) {
+            throw new BadRequestException("Access denied: user is not a participant of this appointment");
         }
         appt.setStatus(AppointmentStatus.CANCELED);
         appointmentRepository.save(appt);
