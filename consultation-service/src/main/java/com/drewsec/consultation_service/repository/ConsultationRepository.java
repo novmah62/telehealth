@@ -6,11 +6,12 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
-public interface ConsultationRepository extends MongoRepository<Consultation, String> {
+public interface ConsultationRepository extends MongoRepository<Consultation, UUID> {
 
-    List<Consultation> findByPatientId(String patientId);
-    List<Consultation> findByConsultantId(String consultantId);
+    List<Consultation> findByPatientId(UUID patientId);
+    List<Consultation> findByConsultantId(UUID consultantId);
     List<Consultation> findByStatus(ConsultationStatus consultationStatus);
     List<Consultation> findByStatusAndCreatedAtBefore(ConsultationStatus consultationStatus, LocalDateTime cutoff);
 

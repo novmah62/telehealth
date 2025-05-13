@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.UUID;
 
 import static java.io.File.separator;
 import static java.lang.System.currentTimeMillis;
@@ -28,7 +29,7 @@ public class FileServiceImpl implements FileService {
     @Override
     public String saveFile(
             @Nonnull MultipartFile sourceFile,
-            @Nonnull String userId
+            @Nonnull UUID userId
     ) {
         final String fileUploadSubPath = "users" + separator + userId;
         return uploadFile(sourceFile, fileUploadSubPath);

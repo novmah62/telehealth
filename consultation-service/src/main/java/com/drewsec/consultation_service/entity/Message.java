@@ -10,6 +10,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Getter
 @Setter
@@ -19,13 +20,13 @@ import java.time.LocalDateTime;
 public class Message {
 
     @Id
-    private String id;
-    private String consultationId;
+    private UUID id;
+    private UUID consultationId;
     private String content;
     private MessageState state;
     private MessageType type;
-    private String senderId;
-    private String receiverId;
+    private UUID senderId;
+    private UUID receiverId;
     private String mediaFilePath;
     private LocalDateTime createdDate;
 

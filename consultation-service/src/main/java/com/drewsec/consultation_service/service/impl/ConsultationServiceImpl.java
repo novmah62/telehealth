@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static com.drewsec.commons.definitions.constants.ApiConstants.CONSULTATION_ALREADY_CLOSED;
@@ -32,7 +33,7 @@ public class ConsultationServiceImpl implements ConsultationService {
     private final NotificationService notificationService;
 
     @Override
-    public ConsultationResponse createConsultation(String patientId) {
+    public ConsultationResponse createConsultation(UUID patientId) {
         Consultation consultation = new Consultation();
         consultation.setPatientId(patientId);
         consultation.setStatus(ConsultationStatus.PENDING);
@@ -41,9 +42,9 @@ public class ConsultationServiceImpl implements ConsultationService {
     }
 
     @Override
-    public ConsultationResponse acceptConsultation(String consultationId, String consultantId) {
+    public ConsultationResponse acceptConsultation(UUID consultationId, UUID consultantId) {
         Consultation consultation = consultationRepository.findById(consultationId)
-                .orElseThrow(() -> new ResourceNotFoundException("Consultation", "consultation ID", consultationId));
+                .orElseThrow(() -> new ResourceNotFoundException("Consultation", "consultation ID", consultationId.toString()));
 
         if (consultation.getStatus() != ConsultationStatus.PENDING) {
             throw new BadRequestException(CONSULTATION_ALREADY_CLOSED);
@@ -57,9 +58,9 @@ public class ConsultationServiceImpl implements ConsultationService {
     }
 
     @Override
-    public ConsultationResponse completeConsultation(String consultationId, String userId) {
+    public ConsultationResponse completeConsultation(UUID consultationId, UUID userId) {
         Consultation consultation = consultationRepository.findById(consultationId)
-                .orElseThrow(() -> new ResourceNotFoundException("Consultation", "consultation ID", consultationId));
+                .orElseThrow(() -> new ResourceNotFoundException("Consultation", "consultation ID", consultationId.toString()));
         boolean isParticipant = userId.equals(consultation.getPatientId()) ||
                 userId.equals(consultation.getConsultantId());
         if (!isParticipant) {
@@ -75,7 +76,7 @@ public class ConsultationServiceImpl implements ConsultationService {
     }
 
     @Override
-    public List<ConsultationResponse> getConsultationsByPatient(String patientId) {
+    public List<ConsultationResponse> getConsultationsByPatient(UUID patientId) {
         return consultationRepository.findByPatientId(patientId)
                 .stream()
                 .map(consultationMapper::toConsultationResponse)
@@ -83,7 +84,7 @@ public class ConsultationServiceImpl implements ConsultationService {
     }
 
     @Override
-    public List<ConsultationResponse> getConsultationsByConsultant(String consultantId) {
+    public List<ConsultationResponse> getConsultationsByConsultant(UUID consultantId) {
         return consultationRepository.findByConsultantId(consultantId)
                 .stream()
                 .map(consultationMapper::toConsultationResponse)
