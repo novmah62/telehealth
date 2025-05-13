@@ -6,15 +6,17 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.UUID;
+
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class MessageRequest {
 
-    private String receiverId;
+    private UUID receiverId;
     private String content;
     private MessageType type;
-    private String consultationId;
+    private UUID consultationId;
 
 }

@@ -9,6 +9,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Getter
 @Setter
@@ -18,9 +19,9 @@ import java.time.LocalDateTime;
 public class Consultation {
 
     @Id
-    private String id;
-    private String consultantId;
-    private String patientId;
+    private UUID id;
+    private UUID consultantId;
+    private UUID patientId;
     private ConsultationStatus status; // PENDING, ACTIVE, COMPLETED, CANCELLED
     private LocalDateTime createdAt;
     private LocalDateTime startedAt;

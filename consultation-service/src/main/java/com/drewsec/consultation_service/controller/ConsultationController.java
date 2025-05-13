@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 import static com.drewsec.commons.definitions.constants.ApiConstants.*;
 
@@ -19,8 +20,8 @@ public class ConsultationController {
 
     @PostMapping
     public ApiResponse<ConsultationResponse> createConsultation(
-//            @AuthenticatedUserId String patientId) {
-            @RequestParam String patientId) {
+//            @AuthenticatedUserId UUID patientId) {
+            @RequestParam UUID patientId) {
 
             ConsultationResponse response = consultationService.createConsultation(patientId);
         return new ApiResponse<>(STATUS_CREATED, CONSULTATION_CREATED, response);
@@ -28,9 +29,9 @@ public class ConsultationController {
 
     @PostMapping("/{id}/accept")
     public ApiResponse<ConsultationResponse> acceptConsultation(
-            @PathVariable("id") String consultationId,
-//            @AuthenticatedUserId String consultantId) {
-            @RequestParam String consultantId) {
+            @PathVariable("id") UUID consultationId,
+//            @AuthenticatedUserId UUID consultantId) {
+            @RequestParam UUID consultantId) {
 
         ConsultationResponse response = consultationService.acceptConsultation(consultationId, consultantId);
         return new ApiResponse<>(STATUS_OK, CONSULTATION_ACCEPTED, response);
@@ -38,9 +39,9 @@ public class ConsultationController {
 
     @PostMapping("/{id}/complete")
     public ApiResponse<ConsultationResponse> completeConsultation(
-            @PathVariable("id") String consultationId,
-//            @AuthenticatedUserId String userId) {
-            @RequestParam String userId) {
+            @PathVariable("id") UUID consultationId,
+//            @AuthenticatedUserId UUID userId) {
+            @RequestParam UUID userId) {
 
             ConsultationResponse response = consultationService.completeConsultation(consultationId, userId);
         return new ApiResponse<>(STATUS_OK, CONSULTATION_COMPLETED, response);
@@ -48,8 +49,8 @@ public class ConsultationController {
 
     @GetMapping("/patient")
     public ApiResponse<List<ConsultationResponse>> getByPatient(
-//            @AuthenticatedUserId String patientId) {
-            @RequestParam String patientId) {
+//            @AuthenticatedUserId UUID patientId) {
+            @RequestParam UUID patientId) {
 
         List<ConsultationResponse> list = consultationService.getConsultationsByPatient(patientId);
         return new ApiResponse<>(STATUS_OK, PATIENT_CONSULTATIONS_FETCHED, list);
@@ -58,7 +59,7 @@ public class ConsultationController {
     @GetMapping("/consultant")
     public ApiResponse<List<ConsultationResponse>> getByConsultant(
 //            @AuthenticatedUserId String consultantId) {
-            @RequestParam String consultantId) {
+            @RequestParam UUID consultantId) {
         List<ConsultationResponse> list = consultationService.getConsultationsByConsultant(consultantId);
         return new ApiResponse<>(STATUS_OK, CONSULTANT_CONSULTATIONS_FETCHED, list);
     }

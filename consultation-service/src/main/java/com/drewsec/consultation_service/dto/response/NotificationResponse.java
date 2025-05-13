@@ -7,16 +7,18 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.UUID;
+
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class NotificationResponse {
 
-    private String chatId;
+    private UUID chatId;
     private String content;
-    private String senderId;
-    private String receiverId;
+    private UUID senderId;
+    private UUID receiverId;
     private MessageType messageType;
     private NotificationType type;
     private byte[] media;

@@ -8,6 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Data
 @Builder
@@ -15,12 +16,12 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class MessageResponse {
 
-    private String id;
+    private UUID id;
     private String content;
     private MessageType type;
     private MessageState state;
-    private String senderId;
-    private String receiverId;
+    private UUID senderId;
+    private UUID receiverId;
     private LocalDateTime createdAt;
     private byte[] media;
 
