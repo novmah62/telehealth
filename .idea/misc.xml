@@ -10,6 +10,7 @@
         <option value="$PROJECT_DIR$/pom.xml" />
         <option value="$PROJECT_DIR$/common-service/pom.xml" />
         <option value="$PROJECT_DIR$/verification-service/pom.xml" />
+        <option value="$PROJECT_DIR$/examination-service/pom.xml" />
       </list>
     </option>
     <option name="ignoredFiles">
