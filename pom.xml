@@ -35,8 +35,8 @@
 		<module>user-service</module>
 		<module>consultation-service</module>
 		<module>appointment-service</module>
+		<module>examination-service</module>
 		<module>prescription-service</module>
-		<module>verification-service</module>
 		<module>notification-service</module>
 		<module>audit-service</module>
 		<module>commons</module>
