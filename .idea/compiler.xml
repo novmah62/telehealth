@@ -7,8 +7,8 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="config-server" />
+        <module name="examination-service" />
         <module name="discovery-server" />
-        <module name="verification-service" />
         <module name="appointment-service" />
         <module name="audit-service" />
         <module name="prescription-service" />
@@ -33,11 +33,11 @@
       <module name="config-server" options="-parameters" />
       <module name="consultation-service" options="-parameters" />
       <module name="discovery-server" options="-parameters" />
+      <module name="examination-service" options="-parameters" />
       <module name="notification-service" options="-parameters" />
       <module name="prescription-service" options="-parameters" />
       <module name="telehealth" options="" />
       <module name="user-service" options="-parameters" />
-      <module name="verification-service" options="-parameters" />
     </option>
   </component>
 </project>

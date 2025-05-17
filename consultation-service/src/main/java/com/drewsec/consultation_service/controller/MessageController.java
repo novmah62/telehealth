@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.UUID;
 
 import static com.drewsec.commons.definitions.constants.ApiConstants.*;
 
@@ -23,24 +24,22 @@ public class MessageController {
 
     @PostMapping
     public ApiResponse<Void> sendMessage(@RequestBody MessageRequest request,
-        @RequestParam String senderId) {
+        @RequestParam UUID senderId) {
         messageService.sendMessage(senderId, request);
-//        messageService.sendMessage(request);
         return new ApiResponse<>(STATUS_OK, MESSAGE_SENT);
     }
 
     @PostMapping("/read/{messageId}")
-    public ApiResponse<Void> markAsRead(@PathVariable String messageId) {
+    public ApiResponse<Void> markAsRead(@PathVariable UUID messageId) {
         messageService.markMessageAsRead(messageId);
         return new ApiResponse<>(STATUS_OK, MESSAGE_MARKED_READ);
     }
 
     @PostMapping("/upload/{consultationId}")
     public ApiResponse<Void> uploadMedia(
-            @PathVariable String consultationId,
+            @PathVariable UUID consultationId,
             @RequestParam("file") MultipartFile file,
-            @RequestParam String senderId) {
-//        messageService.uploadMediaMessage(consultationId, file);
+            @RequestParam UUID senderId) {
         messageService.uploadMediaMessage(senderId, consultationId, file);
 
         return new ApiResponse<>(STATUS_OK, MEDIA_UPLOADED);
@@ -48,14 +47,14 @@ public class MessageController {
 
     @GetMapping("/consultation/{consultationId}")
     public ApiResponse<List<MessageResponse>> getMessages(
-            @PathVariable String consultationId) {
+            @PathVariable UUID consultationId) {
         List<MessageResponse> msg = messageService.getMessagesByConsultation(consultationId);
         return new ApiResponse<>(STATUS_OK, MESSAGES_FETCHED, msg);
     }
 
     @GetMapping("/consultation/{consultationId}/page")
     public ApiResponse<Page<MessageResponse>> getMessagesPaged(
-            @PathVariable String consultationId,
+            @PathVariable UUID consultationId,
             Pageable pageable) {
         Page<MessageResponse> page = messageService.getMessagesByConsultation(consultationId, pageable);
         return new ApiResponse<>(STATUS_OK, MESSAGES_FETCHED_PAGED, page);

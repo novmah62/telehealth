@@ -6,10 +6,11 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
 import java.util.List;
+import java.util.UUID;
 
-public interface MessageRepository extends MongoRepository<Message, String> {
+public interface MessageRepository extends MongoRepository<Message, UUID> {
 
-    List<Message> findByConsultationIdOrderByCreatedDateAsc(String consultationId);
-    Page<Message> findByConsultationId(String consultationId, Pageable pageable);
+    List<Message> findByConsultationIdOrderByCreatedDateAsc(UUID consultationId);
+    Page<Message> findByConsultationId(UUID consultationId, Pageable pageable);
 
 }

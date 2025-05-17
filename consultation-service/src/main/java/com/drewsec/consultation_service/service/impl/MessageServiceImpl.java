@@ -25,6 +25,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -37,35 +38,8 @@ public class MessageServiceImpl implements MessageService {
     private final FileService fileService;
     private final NotificationService notificationService;
 
-//    @Override
-//    public void sendMessage(MessageRequest request) {
-//        String senderId = AuthenticatedUserUtil.getCurrentUserId();
-//        Message message = new Message();
-//        message.setConsultationId(request.getConsultationId());
-//        message.setContent(request.getContent());
-//        message.setSenderId(senderId);
-//        message.setReceiverId(request.getReceiverId());
-//        message.setState(MessageState.SENT);
-//        message.setType(request.getType());
-//        message.setCreatedDate(LocalDateTime.now());
-//
-//        messageRepository.save(message);
-//
-//        notificationService.sendNotification(
-//                request.getReceiverId(),
-//                NotificationResponse.builder()
-//                        .chatId(request.getConsultationId())
-//                        .content(request.getContent())
-//                        .senderId(senderId)
-//                        .receiverId(request.getReceiverId())
-//                        .messageType(request.getType())
-//                        .type(NotificationType.MESSAGE)
-//                        .build()
-//        );
-//    }
-
     @Override
-    public void sendMessage(String senderId, MessageRequest request) {
+    public void sendMessage(UUID senderId, MessageRequest request) {
         Message message = new Message();
         message.setConsultationId(request.getConsultationId());
         message.setContent(request.getContent());
@@ -91,55 +65,19 @@ public class MessageServiceImpl implements MessageService {
     }
 
     @Override
-    public void markMessageAsRead(String messageId) {
+    public void markMessageAsRead(UUID messageId) {
         messageRepository.findById(messageId).ifPresent(msg -> {
             msg.setState(MessageState.SEEN);
             messageRepository.save(msg);
         });
     }
 
-//    @Override
-//    public void uploadMediaMessage(String consultationId, MultipartFile file) {
-//        String senderId = AuthenticatedUserUtil.getCurrentUserId();
-//        Consultation consultation = consultationRepository.findById(consultationId)
-//                .orElseThrow(() -> new ResourceNotFoundException("Consultation", "consultation ID", consultationId));
-//
-//        String receiverId = consultation.getConsultantId().equals(senderId)
-//                ? consultation.getPatientId()
-//                : consultation.getConsultantId();
-//
-//        String filePath = fileService.saveFile(file, senderId);
-//
-//        Message message = new Message();
-//        message.setConsultationId(consultationId);
-//        message.setMediaFilePath(filePath);
-//        message.setSenderId(senderId);
-//        message.setReceiverId(receiverId);
-//        message.setState(MessageState.SENT);
-//        message.setType(MessageType.IMAGE);
-//        message.setCreatedDate(LocalDateTime.now());
-//
-//        messageRepository.save(message);
-//
-//        notificationService.sendNotification(
-//                receiverId,
-//                NotificationResponse.builder()
-//                        .chatId(consultationId)
-//                        .media(FileUtil.readFileFromLocation(filePath))
-//                        .senderId(senderId)
-//                        .receiverId(receiverId)
-//                        .messageType(MessageType.IMAGE)
-//                        .type(NotificationType.IMAGE)
-//                        .build()
-//        );
-//    }
-
     @Override
-    public void uploadMediaMessage(String senderId, String consultationId, MultipartFile file) {
+    public void uploadMediaMessage(UUID senderId, UUID consultationId, MultipartFile file) {
         Consultation consultation = consultationRepository.findById(consultationId)
-                .orElseThrow(() -> new ResourceNotFoundException("Consultation", "consultation ID", consultationId));
+                .orElseThrow(() -> new ResourceNotFoundException("Consultation", "consultation ID", consultationId.toString()));
 
-        String receiverId = consultation.getConsultantId().equals(senderId)
+        UUID receiverId = consultation.getConsultantId().equals(senderId)
                 ? consultation.getPatientId()
                 : consultation.getConsultantId();
 
@@ -170,13 +108,13 @@ public class MessageServiceImpl implements MessageService {
     }
 
     @Override
-    public List<MessageResponse> getMessagesByConsultation(String consultationId) {
+    public List<MessageResponse> getMessagesByConsultation(UUID consultationId) {
         return messageRepository.findByConsultationIdOrderByCreatedDateAsc(consultationId)
                 .stream().map(messageMapper::toMessageResponse).toList();
     }
 
     @Override
-    public Page<MessageResponse> getMessagesByConsultation(String consultationId, Pageable pageable) {
+    public Page<MessageResponse> getMessagesByConsultation(UUID consultationId, Pageable pageable) {
         return messageRepository.findByConsultationId(consultationId, pageable)
                 .map(messageMapper::toMessageResponse);
     }

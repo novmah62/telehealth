@@ -16,6 +16,8 @@
     <file url="file://$PROJECT_DIR$/consultation-service/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/discovery-server/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/discovery-server/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/examination-service/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/examination-service/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/notification-service/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/notification-service/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/prescription-service/src/main/java" charset="UTF-8" />
@@ -24,7 +26,5 @@
     <file url="file://$PROJECT_DIR$/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/user-service/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/user-service/src/main/resources" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/verification-service/src/main/java" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/verification-service/src/main/resources" charset="UTF-8" />
   </component>
 </project>

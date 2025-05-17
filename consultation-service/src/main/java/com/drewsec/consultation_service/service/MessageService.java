@@ -7,15 +7,14 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.UUID;
 
 public interface MessageService {
 
-//    void sendMessage(MessageRequest request);
-    void sendMessage(String senderId, MessageRequest request);
-    void markMessageAsRead(String messageId);
-//    void uploadMediaMessage(String consultationId, MultipartFile file);
-    void uploadMediaMessage(String senderId, String consultationId, MultipartFile file);
-    List<MessageResponse> getMessagesByConsultation(String consultationId);
-    Page<MessageResponse> getMessagesByConsultation(String consultationId, Pageable pageable);
+    void sendMessage(UUID senderId, MessageRequest request);
+    void markMessageAsRead(UUID messageId);
+    void uploadMediaMessage(UUID senderId, UUID consultationId, MultipartFile file);
+    List<MessageResponse> getMessagesByConsultation(UUID consultationId);
+    Page<MessageResponse> getMessagesByConsultation(UUID consultationId, Pageable pageable);
 
 }
