@@ -2,5 +2,7 @@ package com.drewsec.commons.event;
 
 public enum EventType {
     CREATED,
-    CANCELLED
+    CANCELLED,
+    COMPLETED,
+    COMPENSATED,
 }

@@ -111,9 +111,41 @@ Apache Kafka provides reliable, real-time communication between system component
 
 OpenTelemetry collects metrics and distributed traces. Prometheus, Grafana, and Loki are used for metrics collection, dashboarding, and log monitoring.
 
-### Saga Choreography
+## Saga Choreography
 
 A decentralized Saga pattern using Kafka events coordinates service interactions. Compensating events handle failures to ensure consistency.
+
+```mermaid
+flowchart LR
+    subgraph "Saga Flow"
+        direction LR
+        A[Appointment Service]
+        E[Examination Service]
+        P[Prescription Service]
+        S([Completed])
+        F([Compensated])
+
+        %% Success Path (top)
+        A -- appointment.created --> E
+        E -- examination.completed --> P
+        P -- prescription.created --> S
+
+        %% Compensation Path (bottom)
+        A -- appointment.cancelled --> E
+        E -- examination.compensated --> P
+        P -- prescription.compensated --> F
+    end
+
+    classDef successPath stroke:#28a745,stroke-width:2px;
+    classDef failurePath stroke:#d73a49,stroke-width:2px,stroke-dasharray: 5 5;
+
+    linkStyle 0 class:successPath
+    linkStyle 1 class:successPath
+    linkStyle 2 class:successPath
+    linkStyle 3 class:failurePath
+    linkStyle 4 class:failurePath
+    linkStyle 5 class:failurePath
+```
 
 ## E-Prescription Security Details
 
