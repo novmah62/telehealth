@@ -125,26 +125,16 @@ flowchart LR
         S([Completed])
         F([Compensated])
 
-        %% Success Path (top)
+        %% Success Path
         A -- appointment.created --> E
         E -- examination.completed --> P
         P -- prescription.created --> S
 
-        %% Compensation Path (bottom)
+        %% Compensation Path
         A -- appointment.cancelled --> E
         E -- examination.compensated --> P
         P -- prescription.compensated --> F
     end
-
-    classDef successPath stroke:#28a745,stroke-width:2px;
-    classDef failurePath stroke:#d73a49,stroke-width:2px,stroke-dasharray: 5 5;
-
-    linkStyle 0 class:successPath
-    linkStyle 1 class:successPath
-    linkStyle 2 class:successPath
-    linkStyle 3 class:failurePath
-    linkStyle 4 class:failurePath
-    linkStyle 5 class:failurePath
 ```
 
 ## E-Prescription Security Details
