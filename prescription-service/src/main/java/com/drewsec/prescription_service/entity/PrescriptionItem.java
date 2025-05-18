@@ -20,4 +20,7 @@ public class PrescriptionItem {
     @Column(name = "dosage", nullable = false, length = 100)
     private String dosage;
 
+    @Column(name = "note", nullable = false, length = 200)
+    private String note;
+
 }
