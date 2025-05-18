@@ -7,6 +7,6 @@ import java.util.List;
 import java.util.UUID;
 
 public interface SymptomService {
-    SymptomResponse addSymptom(SymptomRequest request);
+    SymptomResponse addSymptom(UUID examinationId, SymptomRequest request);
     List<SymptomResponse> listByExamination(UUID examinationId);
 }

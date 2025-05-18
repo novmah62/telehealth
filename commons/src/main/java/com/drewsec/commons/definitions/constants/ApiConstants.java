@@ -47,4 +47,24 @@ public class ApiConstants {
     public static final String DOCTOR_AVAILABILITIES_FETCHED = "Doctor availabilities fetched";
     public static final String AVAILABLE_WITH_SLOTS_FETCHED = "Available availabilities with slots fetched";
 
+    // Examination messages
+    public static final String EXAMINATION_CREATED = "Examination created successfully";
+    public static final String EXAMINATION_FETCHED = "Examination fetched successfully";
+    public static final String DOCTOR_EXAMINATIONS_FETCHED = "Doctor examinations fetched successfully";
+    public static final String PATIENT_EXAMINATIONS_FETCHED = "Patient examinations fetched successfully";
+
+    // Diagnosis messages
+    public static final String DIAGNOSIS_ADDED = "Diagnosis added successfully";
+    public static final String EXAMINATION_DIAGNOSES_FETCHED = "Examination diagnoses fetched successfully";
+
+    // Symptom messages
+    public static final String SYMPTOM_ADDED = "Symptom added successfully";
+    public static final String EXAMINATION_SYMPTOMS_FETCHED = "Examination symptoms fetched successfully";
+
+    // Clinical test messages
+    public static final String CLINICAL_TEST_ORDERED = "Clinical test ordered successfully";
+    public static final String CLINICAL_TEST_UPDATED = "Clinical test updated successfully";
+    public static final String EXAMINATION_TESTS_FETCHED = "Examination tests fetched successfully";
+
+
 }
