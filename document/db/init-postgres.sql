@@ -3,8 +3,8 @@
 -- =============================
 CREATE DATABASE user_service;
 CREATE DATABASE appointment_service;
+CREATE DATABASE examination_service;
 CREATE DATABASE prescription_service;
-CREATE DATABASE verification_service;
 
 -- -- =============================
 -- -- Create users & grant privileges for user_service

@@ -113,6 +113,28 @@ OpenTelemetry thu thập metrics và distributed traces. Prometheus, Grafana, v�
 
 Hệ thống sử dụng mô hình Saga phân tán dùng sự kiện Kafka để điều phối các service. Trong trường hợp lỗi, sự kiện bù trừ (compensating event) đảm bảo hành vi rollback nhất quán.
 
+```mermaid
+flowchart LR
+    subgraph "Saga Flow"
+        direction LR
+        A[Appointment Service]
+        E[Examination Service]
+        P[Prescription Service]
+        S([Completed])
+        F([Compensated])
+
+        %% Success Path
+        A -- appointment.created --> E
+        E -- examination.completed --> P
+        P -- prescription.created --> S
+
+        %% Compensation Path
+        A -- appointment.cancelled --> E
+        E -- examination.compensated --> P
+        P -- prescription.compensated --> F
+    end
+```
+
 ## Chi tiết các chức năng an toàn
 
 Các biện pháp bảo mật mạnh mẽ được tích hợp:
