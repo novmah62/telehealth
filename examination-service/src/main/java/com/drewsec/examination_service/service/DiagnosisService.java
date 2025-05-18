@@ -7,6 +7,6 @@ import java.util.List;
 import java.util.UUID;
 
 public interface DiagnosisService {
-    DiagnosisResponse addDiagnosis(DiagnosisRequest request);
+    DiagnosisResponse addDiagnosis(UUID examinationId,DiagnosisRequest request);
     List<DiagnosisResponse> listByExamination(UUID examinationId);
 }

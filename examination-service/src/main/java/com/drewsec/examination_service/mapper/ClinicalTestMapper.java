@@ -1,6 +1,7 @@
 package com.drewsec.examination_service.mapper;
 
 import com.drewsec.examination_service.dto.request.ClinicalTestRequest;
+import com.drewsec.examination_service.dto.request.ClinicalTestResultRequest;
 import com.drewsec.examination_service.dto.response.ClinicalTestResponse;
 import com.drewsec.examination_service.entity.ClinicalTest;
 import com.drewsec.examination_service.entity.Examination;
@@ -17,6 +18,14 @@ public class ClinicalTestMapper {
         entity.setStatus(TestStatus.ORDERED);
         entity.setOrderedAt(LocalDateTime.now());
         return entity;
+    }
+
+    public static void updateEntityFromResult(ClinicalTest entity, ClinicalTestResultRequest req) {
+        entity.setStatus(req.status());
+        entity.setResultSummary(req.resultSummary());
+        entity.setResultDetail(req.resultDetail());
+        entity.setFileUrl(req.fileUrl());
+        entity.setCompletedAt(LocalDateTime.now());
     }
 
     public static ClinicalTestResponse toResponse(ClinicalTest entity) {

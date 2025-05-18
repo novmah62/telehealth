@@ -26,9 +26,9 @@ public class DiagnosisServiceImpl implements DiagnosisService {
 
     @Override
     @Transactional
-    public DiagnosisResponse addDiagnosis(DiagnosisRequest request) {
-        Examination exam = examinationRepository.findById(request.examinationId())
-                .orElseThrow(() -> new ResourceNotFoundException("Examination", "examination ID", request.examinationId().toString()));
+    public DiagnosisResponse addDiagnosis(UUID examinationId, DiagnosisRequest request) {
+        Examination exam = examinationRepository.findById(examinationId)
+                .orElseThrow(() -> new ResourceNotFoundException("Examination", "examination ID", examinationId.toString()));
         Diagnosis entity = DiagnosisMapper.toEntity(request, exam);
         Diagnosis saved = diagnosisRepository.save(entity);
         return DiagnosisMapper.toResponse(saved);

@@ -26,9 +26,9 @@ public class SymptomServiceImpl implements SymptomService {
 
     @Override
     @Transactional
-    public SymptomResponse addSymptom(SymptomRequest request) {
-        Examination exam = examinationRepository.findById(request.examinationId())
-                .orElseThrow(() -> new ResourceNotFoundException("Examination", "examination ID", request.examinationId().toString()));
+    public SymptomResponse addSymptom(UUID examinationId, SymptomRequest request) {
+        Examination exam = examinationRepository.findById(examinationId)
+                .orElseThrow(() -> new ResourceNotFoundException("Examination", "examination ID", examinationId.toString()));
         Symptom entity = SymptomMapper.toEntity(request, exam);
         Symptom saved = symptomRepository.save(entity);
         return SymptomMapper.toResponse(saved);
