@@ -21,12 +21,12 @@ public class AppointmentController {
 
     @PostMapping
     public ApiResponse<AppointmentResponse> bookAppointment(
-//            @AuthenticatedUserId String patientId,
-            @RequestParam String patientId,
+//            @AuthenticatedUserId UUID patientId,
+            @RequestParam UUID patientId,
             @RequestBody AppointmentRequest request) {
 
         AppointmentResponse response = appointmentService.bookAppointment(
-                UUID.fromString(patientId),
+                patientId,
                 request
         );
         return new ApiResponse<>(
@@ -38,14 +38,14 @@ public class AppointmentController {
 
     @PostMapping("/{id}/cancel")
     public ApiResponse<Void> cancelAppointment(
-            @PathVariable("id") String appointmentId,
-//            @AuthenticatedUserId String doctorId,
-            @RequestParam String doctorId,
+            @PathVariable("id") UUID appointmentId,
+//            @AuthenticatedUserId UUID doctorId,
+            @RequestParam UUID doctorId,
             @RequestParam String reason) {
 
         appointmentService.cancelAppointment(
-                UUID.fromString(doctorId),
-                UUID.fromString(appointmentId),
+                doctorId,
+                appointmentId,
                 reason
         );
         return new ApiResponse<>(
@@ -56,12 +56,10 @@ public class AppointmentController {
 
     @GetMapping("/patient")
     public ApiResponse<List<AppointmentResponse>> listByPatient(
-//            @AuthenticatedUserId String patientId) {
-            @RequestParam String patientId) {
+//            @AuthenticatedUserId UUID patientId) {
+            @RequestParam UUID patientId) {
 
-        List<AppointmentResponse> list = appointmentService.listByPatient(
-                UUID.fromString(patientId)
-        );
+        List<AppointmentResponse> list = appointmentService.listByPatient(patientId);
         return new ApiResponse<>(
                 STATUS_OK,
                 PATIENT_APPOINTMENTS_FETCHED,
@@ -71,14 +69,11 @@ public class AppointmentController {
 
     @GetMapping("/doctor/next")
     public ApiResponse<List<AppointmentResponse>> listNextByDoctor(
-//            @AuthenticatedUserId String doctorId,
-            @RequestParam String doctorId,
+//            @AuthenticatedUserId UUID doctorId,
+            @RequestParam UUID doctorId,
             @RequestParam int limit) {
 
-        List<AppointmentResponse> list = appointmentService.listNextByDoctor(
-                UUID.fromString(doctorId),
-                limit
-        );
+        List<AppointmentResponse> list = appointmentService.listNextByDoctor(doctorId, limit);
         return new ApiResponse<>(
                 STATUS_OK,
                 DOCTOR_NEXT_APPOINTMENTS_FETCHED,

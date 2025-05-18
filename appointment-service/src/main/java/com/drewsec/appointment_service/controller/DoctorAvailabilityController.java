@@ -25,9 +25,7 @@ public class DoctorAvailabilityController {
             @RequestParam UUID doctorId,
             @RequestBody DoctorAvailabilityRequest request) {
 
-        DoctorAvailabilityResponse response = availabilityService.createAvailability(
-                doctorId, request
-        );
+        DoctorAvailabilityResponse response = availabilityService.createAvailability(doctorId, request);
         return new ApiResponse<>(
                 STATUS_CREATED,
                 AVAILABILITY_CREATED,
@@ -40,9 +38,7 @@ public class DoctorAvailabilityController {
             @RequestParam UUID doctorId,
             @RequestParam LocalDate date) {
 
-        List<DoctorAvailabilityResponse> list = availabilityService.listByDoctorAndDate(
-                doctorId, date
-        );
+        List<DoctorAvailabilityResponse> list = availabilityService.listByDoctorAndDate(doctorId, date);
         return new ApiResponse<>(
                 STATUS_OK,
                 DOCTOR_AVAILABILITIES_FETCHED,
@@ -56,9 +52,7 @@ public class DoctorAvailabilityController {
             @RequestParam LocalDate from,
             @RequestParam LocalDate to) {
 
-        List<DoctorAvailabilityResponse> list = availabilityService.listAvailable(
-                doctorId, from, to
-        );
+        List<DoctorAvailabilityResponse> list = availabilityService.listAvailable(doctorId, from, to);
         return new ApiResponse<>(
                 STATUS_OK,
                 AVAILABLE_WITH_SLOTS_FETCHED,
