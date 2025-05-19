@@ -3,13 +3,12 @@ package com.drewsec.prescription_service.entity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import jakarta.persistence.Lob;
-import lombok.AccessLevel;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Embeddable
 @Getter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Setter
 public class DigitalSignature {
 
     @Lob
