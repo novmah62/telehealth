@@ -1,8 +1,13 @@
 package com.drewsec.prescription_service.service.impl;
 
-import com.drewsec.prescription_service.dto.response.DecryptedPayload;
+import com.drewsec.prescription_service.dto.request.DecryptedPayload;
 import com.drewsec.prescription_service.entity.DigitalSignature;
 import com.drewsec.prescription_service.service.SqrcService;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.zxing.BarcodeFormat;
+import com.google.zxing.MultiFormatWriter;
+import com.google.zxing.client.j2se.MatrixToImageWriter;
+import com.google.zxing.common.BitMatrix;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -10,6 +15,7 @@ import org.springframework.stereotype.Service;
 import javax.crypto.Cipher;
 import javax.crypto.spec.GCMParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
+import java.io.ByteArrayOutputStream;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
@@ -63,10 +69,10 @@ public class SqrcServiceImpl implements SqrcService {
     @Override
     public String generateQrBase64(String encryptedPayload) {
         try {
-            com.google.zxing.common.BitMatrix matrix = new com.google.zxing.MultiFormatWriter()
-                    .encode(encryptedPayload, com.google.zxing.BarcodeFormat.QR_CODE, 300, 300);
-            java.io.ByteArrayOutputStream baos = new java.io.ByteArrayOutputStream();
-            com.google.zxing.client.j2se.MatrixToImageWriter.writeToStream(matrix, "PNG", baos);
+            BitMatrix matrix = new MultiFormatWriter()
+                    .encode(encryptedPayload, BarcodeFormat.QR_CODE, 300, 300);
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            MatrixToImageWriter.writeToStream(matrix, "PNG", baos);
             return Base64.getEncoder().encodeToString(baos.toByteArray());
         } catch (Exception e) {
             throw new IllegalStateException("QR generation failed", e);
@@ -89,7 +95,7 @@ public class SqrcServiceImpl implements SqrcService {
             byte[] plain = cipher.doFinal(cipherText);
             String json = new String(plain, StandardCharsets.UTF_8);
             // Simple parse (consider using Jackson/Gson in production)
-            var node = new com.fasterxml.jackson.databind.ObjectMapper().readTree(json);
+            var node = new ObjectMapper().readTree(json);
             return new DecryptedPayload(
                     node.get("code").asText(),
                     node.get("sig").asText(),

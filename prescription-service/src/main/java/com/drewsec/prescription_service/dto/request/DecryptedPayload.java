@@ -1,4 +1,4 @@
-package com.drewsec.prescription_service.dto.response;
+package com.drewsec.prescription_service.dto.request;
 
 public record DecryptedPayload(
         String code,
