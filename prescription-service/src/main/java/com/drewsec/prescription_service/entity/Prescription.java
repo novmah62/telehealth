@@ -44,7 +44,6 @@ public class Prescription extends AuditableEntity {
     )
     private List<PrescriptionItem> items;
 
-    @NotNull
     @Column(name = "diagnosis_summary", nullable = false, columnDefinition = "TEXT")
     private String diagnosisSummary;
 

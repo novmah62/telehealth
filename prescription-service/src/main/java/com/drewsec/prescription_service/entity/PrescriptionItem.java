@@ -2,13 +2,12 @@ package com.drewsec.prescription_service.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
-import lombok.AccessLevel;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Embeddable
 @Getter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Setter
 public class PrescriptionItem {
 
     @Column(name = "medicine_code", nullable = false, length = 20)
@@ -19,5 +18,8 @@ public class PrescriptionItem {
 
     @Column(name = "dosage", nullable = false, length = 100)
     private String dosage;
+
+    @Column(name = "note", nullable = false, length = 200)
+    private String note;
 
 }
