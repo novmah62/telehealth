@@ -74,7 +74,7 @@ public class PrescriptionController {
                         PRESCRIPTION_VERIFIED,
                         data))
                 .orElseGet(() -> new ApiResponse<>(
-                        STATUS_BAD_REQUEST,
+                        STATUS_UNAUTHORIZED,
                         PRESCRIPTION_VERIFICATION_FAILED
                 ));
     }

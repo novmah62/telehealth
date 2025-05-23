@@ -1,6 +1,5 @@
 package com.drewsec.prescription_service.service;
 
-import com.drewsec.prescription_service.dto.request.PrepareRequest;
 import com.drewsec.prescription_service.dto.request.PrescriptionRequest;
 import com.drewsec.prescription_service.dto.response.PrescriptionResponse;
 import org.springframework.data.domain.Page;
