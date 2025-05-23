@@ -1,5 +1,6 @@
 package com.drewsec.prescription_service.service.impl;
 
+import com.drewsec.commons.exception.AccessDeniedException;
 import com.drewsec.commons.exception.ResourceNotFoundException;
 import com.drewsec.prescription_service.dto.request.PrescriptionRequest;
 import com.drewsec.prescription_service.dto.response.PrescriptionResponse;
@@ -29,9 +30,12 @@ public class PrescriptionServiceImpl implements PrescriptionService {
 
     @Override
     @Transactional
-    public PrescriptionResponse issue(PrescriptionRequest request) {
+    public PrescriptionResponse issue(UUID doctorId,PrescriptionRequest request) {
         Prescription entity = repository.findById(request.prescriptionId())
                 .orElseThrow(() -> new ResourceNotFoundException("Prescription", "Prescription ID", request.prescriptionId().toString()));
+        if (doctorId != entity.getDoctorId()) {
+            throw new AccessDeniedException("Access denied: You are not the doctor who issued this prescription.");
+        }
         byte[] data = entity.getPrescriptionCode().getBytes(StandardCharsets.UTF_8);
         DigitalSignature sig = signService.sign(data);
         String encrypted = sqrcService.generateEncryptedPayload(entity.getPrescriptionCode(), sig);

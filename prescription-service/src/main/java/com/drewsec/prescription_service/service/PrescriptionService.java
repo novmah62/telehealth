@@ -9,7 +9,7 @@ import org.springframework.data.domain.Pageable;
 import java.util.UUID;
 
 public interface PrescriptionService {
-    PrescriptionResponse issue(PrescriptionRequest request);
+    PrescriptionResponse issue(UUID doctorId,PrescriptionRequest request);
     Page<PrescriptionResponse> listByDoctor(UUID doctorId, Pageable pageable);
     Page<PrescriptionResponse> listByPatient(UUID patientId, Pageable pageable);
 }

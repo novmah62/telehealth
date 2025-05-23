@@ -66,5 +66,12 @@ public class ApiConstants {
     public static final String CLINICAL_TEST_UPDATED = "Clinical test updated successfully";
     public static final String EXAMINATION_TESTS_FETCHED = "Examination tests fetched successfully";
 
+    // Prescription messages
+    public static final String PRESCRIPTION_ISSUED = "Prescription issued successfully";
+    public static final String PRESCRIPTION_VERIFIED = "Prescription verified successfully";
+    public static final String PRESCRIPTION_VERIFICATION_FAILED = "Prescription verification failed";
+    public static final String DOCTOR_PRESCRIPTIONS_FETCHED = "Doctor prescriptions fetched successfully";
+    public static final String PATIENT_PRESCRIPTIONS_FETCHED = "Patient prescriptions fetched successfully";
+
 
 }

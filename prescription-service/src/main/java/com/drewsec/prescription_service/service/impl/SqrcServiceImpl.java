@@ -4,10 +4,11 @@ import com.drewsec.prescription_service.dto.request.DecryptedPayload;
 import com.drewsec.prescription_service.entity.DigitalSignature;
 import com.drewsec.prescription_service.service.SqrcService;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.zxing.BarcodeFormat;
-import com.google.zxing.MultiFormatWriter;
+import com.google.zxing.*;
+import com.google.zxing.client.j2se.BufferedImageLuminanceSource;
 import com.google.zxing.client.j2se.MatrixToImageWriter;
 import com.google.zxing.common.BitMatrix;
+import com.google.zxing.common.HybridBinarizer;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -15,6 +16,9 @@ import org.springframework.stereotype.Service;
 import javax.crypto.Cipher;
 import javax.crypto.spec.GCMParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
@@ -106,5 +110,23 @@ public class SqrcServiceImpl implements SqrcService {
             throw new IllegalStateException("Decryption failed", e);
         }
     }
+
+    @Override
+    public String extractEncryptedPayload(String qrBase64) {
+        try {
+            byte[] imageBytes = Base64.getDecoder().decode(qrBase64);
+            ByteArrayInputStream bais = new ByteArrayInputStream(imageBytes);
+            BufferedImage bufferedImage = ImageIO.read(bais);
+
+            LuminanceSource source = new BufferedImageLuminanceSource(bufferedImage);
+            BinaryBitmap bitmap = new BinaryBitmap(new HybridBinarizer(source));
+            Result result = new MultiFormatReader().decode(bitmap);
+
+            return result.getText();
+        } catch (Exception e) {
+            throw new IllegalStateException("Failed to extract encrypted payload from QR base64", e);
+        }
+    }
+
 }
 

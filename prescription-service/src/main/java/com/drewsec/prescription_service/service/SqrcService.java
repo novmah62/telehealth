@@ -7,4 +7,5 @@ public interface SqrcService {
     String generateEncryptedPayload(String prescriptionCode, DigitalSignature signature);
     String generateQrBase64(String encryptedPayload);
     DecryptedPayload decrypt(String encryptedPayload);
+    String extractEncryptedPayload(String qrBase64);
 }
