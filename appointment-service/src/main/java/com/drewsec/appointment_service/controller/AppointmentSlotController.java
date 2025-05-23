@@ -38,9 +38,7 @@ public class AppointmentSlotController {
             @RequestParam LocalDate from,
             @RequestParam LocalDate to) {
 
-        List<AppointmentSlotResponse> list = slotService.listFreeSlotsByDoctor(
-                doctorId, from, to
-        );
+        List<AppointmentSlotResponse> list = slotService.listFreeSlotsByDoctor(doctorId, from, to);
         return new ApiResponse<>(
                 STATUS_OK,
                 FREE_SLOTS_FETCHED,
@@ -69,9 +67,7 @@ public class AppointmentSlotController {
             @RequestParam LocalDate startDate,
             @RequestParam LocalDate endDate) {
 
-        Map<LocalDate, Long> counts = slotService.countBookedSlotsPerDay(
-                doctorId, startDate, endDate
-        );
+        Map<LocalDate, Long> counts = slotService.countBookedSlotsPerDay(doctorId, startDate, endDate);
         return new ApiResponse<>(
                 STATUS_OK,
                 BOOKED_SLOTS_COUNT_FETCHED,
